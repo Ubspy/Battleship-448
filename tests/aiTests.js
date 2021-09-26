@@ -19,7 +19,7 @@ class AITests
         let mediumAI = new AI("medium");
 
         // TODO: This needs to be implemented
-        let ships = mediumAI.placeShips();
+        let ships = mediumAI.placeShips(aiBoard);
  
         let currentHit = null;
 
@@ -82,7 +82,7 @@ class AITests
         easyAI = new AI("easy");
 
         // TODO: This function needs to be added
-        easyAI.placeShips();
+        easyAI.placeShips(aiBoard);
 
         // We don't care about the player's turn, but what we do care about is how the AI places ships
         // The first test I have is that we call the AI fire function for as many squares as there are on the board
