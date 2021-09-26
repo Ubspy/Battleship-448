@@ -132,6 +132,27 @@ class AITests
         return randomBoardTest(aiOneBoard, aiTwoBoard) / 30;
     }
 
+    validPlacementTest(aiObject) {
+        // Given an AI object, creates 10 boards with a capacity of 6 ships.
+        // Has the AI place ships on the board, then checks that there aren't any invalid placements (i.e., overlapping ships,
+        // outside of the board). Checks this simply by asserting that there are 6+5+4+3+2+1 = 21 ship squares on the board.
+        for (var i = 0; i < 10; i++) {
+            let board = new board(6);
+            aiObject.placeShips(board);
+            let shipSquares = board.board.reduce((prevSum, currArr) => prevSum + currArr.reduce((prevSum2, currSquare) => {
+                if (currSquare instanceof ship) {
+                    return prevSum2 + 1;
+                } else {
+                    return prevSum2;
+                }
+            }));
+            if (shipSquares != 21) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     randomBoardTest(boardOne, boardTwo) {
         randomScore = 0;
 
