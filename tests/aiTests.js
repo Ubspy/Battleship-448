@@ -153,6 +153,22 @@ class AITests
         return true;
     }
 
+    randomPlacementTest(difficulty) {
+        // Given the difficulty string, creates two AI objects of the same difficulty. Creates two boards of 6 ships.
+        // Has each AI place the ships on its own board. Finally, uses randomBoardTest() to assert that the ships
+        // have not been placed in the same spots by the two AI objects.
+
+        let aiOne = new AI(difficulty);
+        let aiTwo = new AI(difficulty);
+        let boardOne = new board(6);
+        let boardTwo = new board(6);
+
+        aiOne.placeShips(boardOne);
+        aiTwo.placeShips(boardTwo);
+
+        return randomBoardTest(boardOne, boardTwo); // not sure what arithmetic to do from here but this is a start.
+    }
+
     randomBoardTest(boardOne, boardTwo) {
         randomScore = 0;
 
