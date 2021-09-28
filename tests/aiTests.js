@@ -1,6 +1,7 @@
 class AITests
 {
     // TODO: Assumes an AI class
+    // This just prints the status of all the AI tests that were written
     testEasyAI() {
         console.log("Easy AI tests:");
         console.log(`Full test: ${}`, (this.easyFullTest() ? "PASSED" : "FAILED"));
@@ -11,8 +12,11 @@ class AITests
         console.log(`\nMedium AI sunk ship test: ${}`, (this.testMediumAI() ? "PASSED" : "FAILED"));
     }
 
+    // This test has multiple parts, first we fire until hit something. From there, the AI should know that the next spot is adjacent to that location
+    // From there, the AI should sink the ship in S - 2 + 1 turns, with S being the size of the ship. We subtract two because we've already hit two spots
+    // on the ship, and we add one because there's a chance that you hit the middle of the ship, so the AI will go until it misses, the go the opposite
+    // direction from the original hit point
     testMediumAI() {
-        // Tests: See if we give it a ship spot if it can sink it in X turns with X being ship size
         let aiBoard = new board(6);
         
         // TODO: This needs to be implemented
@@ -62,7 +66,8 @@ class AITests
 
         // If it makes it all the way then our AI did it right, and we should be able to then keep going for the size of the ship to sink it
         // We will fire two less than the ship size since we already fired on two of the squared
-        for(var i = 0; i < firedShip.getSize() - 2; i++)
+        // We fire once more though incase it reached the end of the ship and needs to go back
+        for(var i = 0; i < firedShip.getSize() - 1; i++)
         {
             // TODO: This needs to be implemented
             mediumAI.fire(aiBoard);
@@ -72,6 +77,9 @@ class AITests
         return firedShip.isSunk(); 
     }
 
+    // This test isn't super necessary, but it's better than not having it I suppose.
+    // This test randomly fires at the board using the easy mode 90 times (as many squares as the board)
+    // it then checks if the board is full
     easyFullTest() {
         // For an easy AI, first we need to establish a game
         // Make a new board for the player and the AI 
@@ -84,8 +92,8 @@ class AITests
         // TODO: This function needs to be added
         easyAI.placeShips(aiBoard);
 
-        // We don't care about the player's turn, but what we do care about is how the AI places ships
         // The first test I have is that we call the AI fire function for as many squares as there are on the board
+        // We don't care about the players turn in this case, so we won't bother with their turns
         // If all the squares are full, then we at least know it's doing that right
         for(let i = 0; i < 90; i++) {
             // TODO: This needs to be implemented
@@ -115,6 +123,8 @@ class AITests
         return full;
     }
 
+    // This tests creates two easy AI objects and fires at their own board 30 times each
+    // We then compare the boards to see how random the firing is
     easyRandomTest() {
         // TODO: This needs to be implemented
         let easyAi = new AI("easy");
@@ -169,6 +179,19 @@ class AITests
         return randomBoardTest(boardOne, boardTwo); // not sure what arithmetic to do from here but this is a start.
     }
 
+    testHardAI() {
+        // Creates a hard AI object and a board. Places 6 ships on the board.
+        // Has the AI fire 6+5+4+3+2+1 = 21 times. Since it cheats, it should have hit every time and not missed a single shot.
+        let ai = new AI("hard");
+        let board = new board(6);
+        ai.placeShips(board);
+        for (let i = 0; i < 21; i++) {
+            ai.fire();
+        }
+        return board.allSunk();
+    }
+
+    // Helper function to determine how different two distinct boards are
     randomBoardTest(boardOne, boardTwo) {
         randomScore = 0;
 
@@ -181,9 +204,5 @@ class AITests
         }
 
         return randomScore;
-    }
-
-    startAIGame(aiLevel) {
-        
     }
 }
