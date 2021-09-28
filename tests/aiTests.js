@@ -142,6 +142,18 @@ class AITests
         return randomBoardTest(aiOneBoard, aiTwoBoard) / 30;
     }
 
+    testHardAI() {
+        // Creates a hard AI object and a board. Places 6 ships on the board.
+        // Has the AI fire 6+5+4+3+2+1 = 21 times. Since it cheats, it should have hit every time and not missed a single shot.
+        let ai = new AI("hard");
+        let board = new board(6);
+        ai.placeShips(board);
+        for (let i = 0; i < 21; i++) {
+            ai.fire();
+        }
+        return board.allSunk();
+    }
+
     // Helper function to determine how different two distinct boards are
     randomBoardTest(boardOne, boardTwo) {
         randomScore = 0;
