@@ -41,39 +41,19 @@ class board{
 	*The function then uses the newShip's head location to iterate through the board and add
 	*an instance of the ship in each of the indices from the head location to the tail location.
 	*@param newShip A ship object to be placed onto the board
-	*@param rowTail An integer representing the row index of the tail
-	*@param colTail An integer representing the column index of the tail
 	*@return None
 	*/
-	placeShip(newShip, rowTail, colTail){
+	placeShip(newShip){
 		let [rowHead, colHead] = newShip.getHead()		
 		this.shipArray.push(newShip);//adds the ship in the main array 
 		
-		if(rowHead-rowTail == 0 && colHead-colTail == 0){
-			this.board[rowHead][colHead] = newShip;//if its a 1x1 ship
-		}
-		else if(rowHead-rowTail == 0){// vertical ship 
-			if(colHead-colTail < 0){//going down
-				for(let i = colHead; i <= colTail; i++){
-					this.board[rowHead][i] = newShip;
-				}
+		if (newShip.orientation == 'h') {
+			for (var i = 0; i < newShip.getSize(); i++) {
+				this.board[rowHead][colHead + i] = newShip;
 			}
-			else{//going down 
-				for(let i = colHead; i >= colTail; i--){
-					this.board[rowHead][i] = newShip;
-				}
-			}
-		}
-		else if(colHead-colTail == 0){//horizontal ship  
-			if(rowHead-rowTail < 0){//going right 
-				for(let i = rowHead; i <= rowTail; i++){
-					this.board[i][colHead] = newShip;
-				}
-			}
-			else{//going down 
-				for(let i = rowHead; i >= rowTail; i--){
-					this.board[i][colHead] = newShip;
-				}
+		} else if (newShip.orientation == 'v') {
+			for (var i = 0; i < newShip.getSize(); i++) {
+				this.board[rowHead + i][colHead] = newShip;
 			}
 		}
 	}
