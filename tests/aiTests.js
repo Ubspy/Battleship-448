@@ -23,7 +23,7 @@ class AITests
         let mediumAI = new AI("medium");
 
         // TODO: This needs to be implemented
-        let ships = mediumAI.placeShips();
+        let ships = mediumAI.placeShips(aiBoard);
  
         let currentHit = null;
 
@@ -90,7 +90,7 @@ class AITests
         easyAI = new AI("easy");
 
         // TODO: This function needs to be added
-        easyAI.placeShips();
+        easyAI.placeShips(aiBoard);
 
         // The first test I have is that we call the AI fire function for as many squares as there are on the board
         // We don't care about the players turn in this case, so we won't bother with their turns
@@ -140,6 +140,43 @@ class AITests
         // Get a score of how random is from 0 to 2 based on how many of the squares of the 30 turns are different
         // 0 means no randomness, and two means it's too random, the closer to one the better, but anywhere from 1 to 2 is acceptable
         return randomBoardTest(aiOneBoard, aiTwoBoard) / 30;
+    }
+
+    validPlacementTest(aiObject) {
+        // Given an AI object, creates 10 boards with a capacity of 6 ships.
+        // Has the AI place ships on the board, then checks that there aren't any invalid placements (i.e., overlapping ships,
+        // outside of the board). Checks this simply by asserting that there are 6+5+4+3+2+1 = 21 ship squares on the board.
+        for (var i = 0; i < 10; i++) {
+            let board = new board(6);
+            aiObject.placeShips(board);
+            let shipSquares = board.board.reduce((prevSum, currArr) => prevSum + currArr.reduce((prevSum2, currSquare) => {
+                if (currSquare instanceof ship) {
+                    return prevSum2 + 1;
+                } else {
+                    return prevSum2;
+                }
+            }));
+            if (shipSquares != 21) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    randomPlacementTest(difficulty) {
+        // Given the difficulty string, creates two AI objects of the same difficulty. Creates two boards of 6 ships.
+        // Has each AI place the ships on its own board. Finally, uses randomBoardTest() to assert that the ships
+        // have not been placed in the same spots by the two AI objects.
+
+        let aiOne = new AI(difficulty);
+        let aiTwo = new AI(difficulty);
+        let boardOne = new board(6);
+        let boardTwo = new board(6);
+
+        aiOne.placeShips(boardOne);
+        aiTwo.placeShips(boardTwo);
+
+        return randomBoardTest(boardOne, boardTwo); // not sure what arithmetic to do from here but this is a start.
     }
 
     testHardAI() {
