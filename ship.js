@@ -1,12 +1,12 @@
 /**
 * Creates a ship object and contains ship functions that help with getting size, team, head 
-* of the ship. It has methods to check if a ship has been sunk and to register hits 
+* of the ship. It has methods to check if a ship has been sunk and to register hits.
 */
 
 class ship{
 	
 	/**
-	* The constructor creatses and array for each ship and stores the size, team, rowHead and colHead
+	* The constructor creates and array for each ship and stores the size, team, rowHead and colHead
 	* that are passed in 
 	*
 	* @param  size takes in the size of the ship 
@@ -19,11 +19,18 @@ class ship{
 	*/	
 	constructor(size, team, rowHead, colHead, orientation){
 		this.size = size;
+		this.squares = [];
 		this.hits = new Array(size).fill(0);
 		this.team = team;
-		this.rowHead = rowHead;
-		this.colHead = colHead;
-		this.orientation = orientation
+		if (orientation == 'h') {
+			for (let i = 0; i < size; i++) {
+				this.squares.push([rowHead, colHead + i]);
+			}
+		} else {
+			for (let i = 0; i < size; i++) {
+				this.squares.push([rowHead + i, colHead]);
+			}
+		}
 	}
 	
 	/**
