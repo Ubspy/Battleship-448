@@ -26,6 +26,13 @@ class AI {
             this.mode = 2;
         }
 
+        // Initlalize last found and direction vars
+        this.lastFound = "";
+        this.lastDir = "";
+
+        // We also want a variable for the last ship we fired on
+        this.lastFiredOn = "";
+
         // TODO: Account for input
     }
 
@@ -38,8 +45,6 @@ class AI {
         }
     }
 
-    // TODO: I found this method from https://stackoverflow.com/questions/55611/javascript-private-methods
-    // I have no idea if this will actually work though, we want to check this
     /**
      * The private function to handle firing for the easy mode AI
      * @param boardObj Board The board object that the AI owns in the game, will change the contents of the array to fire
@@ -48,12 +53,46 @@ class AI {
        let fireRes = "";
 
         do {
-            // Make random row and col, the board is 9 tall and 10 wide
-            let randRow = Math.floor(Math.random() * 9);
-            let randCol = Math.floor(Math.random() * 10);
+            // Fire randomly and store the result
+            fireRes = this.#fireRandomly(boardObj);
+       } while(fireRes == 'I');
+    }
 
-            fireRes = boardObj.attemptedShot(randRow, randCol);
-        } while(fireRes == 'I');
+    /**
+     * Private member function to handle firing for the medium AI implementation
+     * @param boardObj Board The board object that the AI should fire on
+    **/
+    #mediumFire(boardObj) {
+        // First thing we want to do here is make sure we don't have a ship we're currently trying to sink
+        if(this.lastFound == "") {
+            // If this is the case, we fire randomly
+            let fireRes = this.#fireRandomly(boardObj);
+
+            // Now we want to see if we hit something
+            if(fireRes == 'H') {
+               this.lastFound = this.lastFiredOn; 
+            }
+        }
+        // If we get here then we know there's a ship we need to keep firing at it
+        // We should check if we have another hit that wasn't the lastFound location
+        else if(this.lastFound == this.lastFiredOn) {
+            // Now we need to fire randomly adjacent to this square
+            // TODO: Somehow track what squares were hit
+        }
+    }
+
+    /**
+     * Private member function to randomly fire on a board
+     * @param boardObj Board The board object to randomly fire on
+    **/
+    #fireRandomly(boardObj) {
+        // Make random row and col, the board is 9 tall and 10 wide
+        let randRow = Math.floor(Math.random() * 9);
+        let randCol = Math.floor(Math.random() * 10);
+
+        this.lastFiredOn = [randRow, randCol];
+
+        return boardObj.attemptedShot(randRow, randCol);
     }
 
     placeShips(board, numberOfShips) {

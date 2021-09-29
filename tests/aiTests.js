@@ -6,8 +6,6 @@ function testEasyAI() {
 
     let randomAIPlaceScore = this.easyRandomTest(); 
     console.log(`Random test: ${randomAIPlaceScore > 0 ? "PASSED" : "FAILED"} with random score of ${randomAIPlaceScore}`);
-
-    console.log(`\nMedium AI sunk ship test: ${this.testMediumAI() ? "PASSED" : "FAILED"}`);
 }
 
 // This test has multiple parts, first we fire until hit something. From there, the AI should know that the next spot is adjacent to that location
