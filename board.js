@@ -13,6 +13,13 @@ class board{
 		this.shipArray=[];
 		
 	}
+
+	isShip(row, col) {
+		return this.shipArray.some((s) => s.squares.some(([r, c]) => r == row && c == col)); // nifty one-liner. This is saying
+		// return true if any ship has the property that one of its coordinates [r, c] matches (row, col) given in the
+		// function arguments
+	}
+
 	/**
 	*The function verifies that the position is a legal move and then returns a value depending on
 	*what it hit. 
@@ -36,6 +43,7 @@ class board{
 		}
 		return 'I';//not a valid shot 
 	}
+
 	/**
 	*The placeShip function is provided a ship, and an index in the array for the tail position
 	*The function then uses the newShip's head location to iterate through the board and add
@@ -78,56 +86,62 @@ class board{
 		}
 	}
 	/**
-	*The getViable tail function is provided a ship, which has a head location, and this function finds the indices of
-	*possible tail locations by iterating in each direction from the head location, breaking if it hits a border or a ship.
-	*@param ship A ship object used to locate the possible tail locations for
-	*@return An array of indecies in form [int: row, int:col]
+	*The getViable tail function takes a rowHead, a colHead, and a size, and computes the tails that may be chosen.
+	*
+	* @param rowHead The potential row index of the head of the ship
+	* @param colHead The potential column index of the head of the ship
+	* @param size The potential size of the ship
+	* @returns A list of [rowTail, colTail] tuples that the user may pick given the parameters.
 	*/
-	getViableTail(ship){
-		let [rowHead, colHead] = ship.getHead();
+	getViableTail(rowHead, colHead, size){
 		let viableTails = [];
-		let viable = true;
-		let size = ship.getSize();
 
-		for(let i = 0; i < ship.getSize(); i++){
-			if(rowHead+i >= this.row || this.board[rowHead+i][colHead] != 0){	
+		// We will use a helper function that simply tells us if a square is both on the board and not occupied by a ship.
+		let isValidSquare = (row, col) => row <= 8 && row >= 0 && col <= 9 && col >= 0 && !this.isShip(row, col);
+
+		
+		// We will check up, down, left, then right.
+
+		// Up:
+		let viable = true;
+		for (let i = 0; i < size; i++) {
+			if (!isValidSquare(rowHead-i, colHead)) {
 				viable = false;
 				break;
 			}
 		}
-		if(viable == true){
-			viableTails.push([rowHead+(ship.getSize()-1),colHead]);
-		}
+		if (viable) {viableTails.push([rowHead-size+1, colHead]);}
+
+		// Down:
 		viable = true;
-		for(let i = 0; i < ship.getSize(); i++){
-			if(rowHead-i < 0 || this.board[rowHead-i][colHead] != 0){
+		for (let i = 0; i < size; i++) {
+			if (!isValidSquare(rowHead+i, colHead)) {
 				viable = false;
 				break;
 			}
 		}
-		if(viable == true){
-			viableTails.push([rowHead-(ship.getSize()-1),colHead]);
-		}
+		if (viable) {viableTails.push([rowHead+size-1, colHead]);}
+
+		// Left:
 		viable = true;
-		for(let i = 0; i < ship.getSize(); i++){
-			if(colHead+i >= this.column || this.board[rowHead][colHead+i] != 0){
+		for (let i = 0; i < size; i++) {
+			if (!isValidSquare(rowHead, colHead-i)) {
 				viable = false;
 				break;
 			}
 		}
-		if(viable == true){
-			viableTails.push([rowHead,colHead+(ship.getSize()-1)]);
-		}
+		if (viable) {viableTails.push([rowHead, colHead-size+1]);}
+
+		// Right:
 		viable = true;
-		for(let i = 0; i < ship.getSize(); i++){
-			if(colHead-i < 0 || this.board[rowHead][colHead-i] != 0){
+		for (let i = 0; i < size; i++) {
+			if (!isValidSquare(rowHead, colHead+i)) {
 				viable = false;
 				break;
 			}
 		}
-		if(viable == true){
-			viableTails.push([rowHead,colHead-(ship.getSize()-1)]);
-		}
+		if (viable) {viableTails.push([rowHead, colHead+size-1]);}
+
 		return viableTails;
 	}
 	/**

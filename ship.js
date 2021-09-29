@@ -1,27 +1,36 @@
 /**
 * Creates a ship object and contains ship functions that help with getting size, team, head 
-* of the ship. It has methods to check if a ship has been sunk and to register hits 
+* of the ship. It has methods to check if a ship has been sunk and to register hits.
 */
 
 class ship{
 	
 	/**
-	* The constructor creatses and array for each ship and stores the size, team, rowHead and colHead
+	* The constructor creates and array for each ship and stores the size, team, rowHead and colHead
 	* that are passed in 
 	*
 	* @param  size takes in the size of the ship 
 	* @param  team the team number (1 or 2) of the them that the ship belongs to 
-	* @param  rowHead the row of head location of the ship 
+	* @param  rowHead the row of head location of the ship (left-most for horizontal, upper-most for vertical)
 	* @param  colHead column of the head location of the ship 
+	* @param  orientation the orientation of the ship - 'h' for horizontal and 'v' for vertical
 	*
 	* @return None 
 	*/	
-	constructor(size, team, rowHead, colHead){
+	constructor(size, team, rowHead, colHead, orientation){
 		this.size = size;
+		this.squares = [];
 		this.hits = new Array(size).fill(0);
 		this.team = team;
-		this.rowHead = rowHead;
-		this.colHead = colHead;
+		if (orientation == 'h') {
+			for (let i = 0; i < size; i++) {
+				this.squares.push([rowHead, colHead + i]);
+			}
+		} else {
+			for (let i = 0; i < size; i++) {
+				this.squares.push([rowHead + i, colHead]);
+			}
+		}
 	}
 	
 	/**
@@ -48,7 +57,7 @@ class ship{
 	* @return rowHead and colHead 
 	*/
 	getHead(){
-		return [parseInt(this.rowHead), parseInt(this.colHead)];
+		return this.squares[0];
 	}
 	
 	/**

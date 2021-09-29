@@ -106,8 +106,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		}
 	} 
-	p1Board = new board(shipCount);
-	p2Board = new board(shipCount);
+	p1Board = new board();
+	p2Board = new board();
 	startGame(shipCount);
 });
 
@@ -219,7 +219,7 @@ function startGame(shipCount){
 			if(LchooseHead){
 				LheadRow = $(this).attr("row");
 				LheadCol = $(this).attr("col");
-				if(!(p1Board.board[LheadRow][LheadCol] instanceof ship)){
+				if(!p1Board.isShip(LheadRow, LheadCol)){
 					possibleShip = new ship(LnumShips, 1, parseInt(LheadRow), parseInt(LheadCol));
 					
 					if(p1Board.getViableTail(possibleShip).length != 0){
