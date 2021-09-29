@@ -55,6 +55,21 @@ class AI {
             fireRes = boardObj.attemptedShot(randRow, randCol);
         } while(fireRes == 'I');
     }
+
+    placeShips(board, numberOfShips) {
+        for (let i = 1; i <= numberOfShips; i++) { // for the number of ships we want to place
+            while(true) {
+                let proposedShip = randomShip(i); // propose a placement for a ship of size i
+                // check if every coordinate of the proposed ship is free space
+                if (proposedShip.every(([r, c]) => !(board.board[r][c] instanceof ship))) {
+                    // place the ship if so
+                    board.placeShip(new ship(i, 2, proposedShip[0][0], proposedShip[0][1]), proposedShip[i-1][0], proposedShip[i-1][1]);
+                    break;
+                }
+                // otherwise, keep proposing random ships
+            }
+        }
+    }
 }
 
 /**
