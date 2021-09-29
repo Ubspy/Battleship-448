@@ -58,14 +58,14 @@ class AI {
 }
 
 /**
- * Generates random coordinates for a ship head and ship tail, given the length.
+ * Generates random coordinates for a ship, given the length.
  * 
  * This function guarantees that the ship will fit within the dimensions of the board.
  * However, it is up to the caller to check that the returned ship coordinates do not
  * overlap with another ship already on the board.
  * 
  * @param length The length of the ship
- * @returns [head coordinates, tail coordinates], or, [[rowHead, colHead], [rowTail, colTail]]
+ * @returns A list of [row, col] coordinates that the ship occupies.
  */
 function randomShip(length) {
 
@@ -77,6 +77,8 @@ function randomShip(length) {
 
     let maxRowHead = 0;
     let maxColHead = 0;
+
+    let shipSquares = [];
 
     if (isHorizontal) {
         maxRowHead = 9; // index 9 == row 10
@@ -90,12 +92,14 @@ function randomShip(length) {
     let colHead = Math.floor(Math.random() * (maxColHead + 1)); // 0..10
 
     if (isHorizontal) {
-        rowTail = rowHead;
-        colTail = colHead + length;
+        for (let i = 0; i < length; i++) {
+            shipSquares.push([rowHead, colHead+i]);
+        }
     } else {
-        rowTail = rowHead + length;
-        colTail = colHead;
+        for (let i = 0; i < length; i++) {
+            shipSquares.push([rowHead+i, colHead]);
+        }
     }
 
-    return [[rowHead, colHead], [rowTail, colTail]];
+    return shipSquares;
 }
