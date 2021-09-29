@@ -13,13 +13,13 @@ function testEasyAI() {
 // on the ship, and we add one because there's a chance that you hit the middle of the ship, so the AI will go until it misses, the go the opposite
 // direction from the original hit point
 function testMediumAI() {
-    let aiBoard = new board(6);
+    let aiBoard = new board();
     
     // TODO: This needs to be implemented
     let mediumAI = new AI("medium");
 
     // TODO: This needs to be implemented
-    let ships = mediumAI.placeShips(aiBoard);
+    let ships = mediumAI.placeShips(aiBoard, 6);
 
     let currentHit = null;
 
@@ -79,14 +79,14 @@ function testMediumAI() {
 function easyFullTest() {
     // For an easy AI, first we need to establish a game
     // Make a new board for the player and the AI 
-    aiBoard = new board(6);
+    aiBoard = new board();
 
     // // TODO: This function needs to be added
     // Makes a new AI object
     easyAI = new AI("easy");
 
     // TODO: This function needs to be added
-    easyAI.placeShips(aiBoard);
+    easyAI.placeShips(aiBoard, 6);
 
     // The first test I have is that we call the AI fire function for as many squares as there are on the board
     // We don't care about the players turn in this case, so we won't bother with their turns
@@ -125,8 +125,8 @@ function easyRandomTest() {
     // TODO: This needs to be implemented
     let easyAI = new AI("easy");
     
-    let aiOneBoard = new board(6);
-    let aiTwoBoard = new board(6);
+    let aiOneBoard = new board();
+    let aiTwoBoard = new board();
 
     for(let i = 0; i < 30; i++) {
         // TODO: This needs to be implemented
@@ -144,8 +144,8 @@ function validPlacementTest(aiObject) {
     // Has the AI place ships on the board, then checks that there aren't any invalid placements (i.e., overlapping ships,
     // outside of the board). Checks this simply by asserting that there are 6+5+4+3+2+1 = 21 ship squares on the board.
     for (var i = 0; i < 10; i++) {
-        let board = new board(6);
-        aiObject.placeShips(board);
+        let board = new board();
+        aiObject.placeShips(board, 6);
         let shipSquares = board.board.reduce((prevSum, currArr) => prevSum + currArr.reduce((prevSum2, currSquare) => {
             if (currSquare instanceof ship) {
                 return prevSum2 + 1;
@@ -167,11 +167,11 @@ function randomPlacementTest(difficulty) {
 
     let aiOne = new AI(difficulty);
     let aiTwo = new AI(difficulty);
-    let boardOne = new board(6);
-    let boardTwo = new board(6);
+    let boardOne = new board();
+    let boardTwo = new board();
 
-    aiOne.placeShips(boardOne);
-    aiTwo.placeShips(boardTwo);
+    aiOne.placeShips(boardOne, 6);
+    aiTwo.placeShips(boardTwo, 6);
 
     return randomBoardTest(boardOne, boardTwo); // not sure what arithmetic to do from here but this is a start.
 }
@@ -180,8 +180,8 @@ function testHardAI() {
     // Creates a hard AI object and a board. Places 6 ships on the board.
     // Has the AI fire 6+5+4+3+2+1 = 21 times. Since it cheats, it should have hit every time and not missed a single shot.
     let ai = new AI("hard");
-    let board = new board(6);
-    ai.placeShips(board);
+    let board = new board();
+    ai.placeShips(board, 6);
     for (let i = 0; i < 21; i++) {
         ai.fire();
     }
