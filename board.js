@@ -4,10 +4,9 @@ class board{
 	*all of our ships that we put on the board
 	*The 2D array is initilized to all 0s. When a miss is detected it is a 1, and the ships are added as ship objects.
 	*@constructor
-	*@param shipCount An integer describing how many ships each player is playing with.
 	*@return None
 	*/
-	constructor (shipCount){
+	constructor (){
 		this.row=9;
 		this.column=10;
 		this.board=new Array(this.row).fill().map(() => (new Array(this.column).fill().map(() => 0)));
