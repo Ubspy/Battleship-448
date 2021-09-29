@@ -95,6 +95,16 @@ class AI {
         return boardObj.attemptedShot(randRow, randCol);
     }
 
+    /**
+     * Places ships randomly on the board.
+     * 
+     * Places the specified number of ships on the specified board. Places ships of increasing length.
+     * For example, placeShips(board, 3) will first place a ship of size 1, then a ship of size 2, then
+     * a ship of size 3.
+     * 
+     * @param {*} board The board object to place ships on
+     * @param {*} numberOfShips The number of ships to place
+     */
     placeShips(board, numberOfShips) {
         for (let i = 1; i <= numberOfShips; i++) { // for the number of ships we want to place
             while(true) {
