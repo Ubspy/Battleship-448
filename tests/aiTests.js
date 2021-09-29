@@ -95,7 +95,7 @@ function easyFullTest() {
     // If all the squares are full, then we at least know it's doing that right
     for(let i = 0; i < 90; i++) {
         // TODO: This needs to be implemented
-        easyAI.fire(aiBboard);
+        easyAI.fire(aiBoard);
     }
 
     // Bool for full result
@@ -103,8 +103,8 @@ function easyFullTest() {
 
     // Now loop through and see if they're all hit
     for(let y = 0; y < 9; y++) {
-        for(let x = 0; i < 10; x++) {
-            if(aiBoard[y][x] instanceof ship) {
+        for(let x = 0; x < 10; x++) {
+            if(aiBoard.board[y][x] instanceof ship) {
                 let boat = aiBoard[y][x];
 
                 // TODO: This function needs to be added
@@ -112,8 +112,8 @@ function easyFullTest() {
                 full = full && boat.getHit(y, x);
             }
             else {
-                // 0 means empty square, so check for that if it's not a ship
-                full = full && aiBoard[y][x] == 0;
+                // 1 means hit square, so check for that if it's not a ship
+                full = full && aiBoard.board[y][x] == 1;
             }
         }
     }

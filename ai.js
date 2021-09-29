@@ -50,7 +50,7 @@ class AI {
         do {
             // Make random row and col, the board is 9 tall and 10 wide
             let randRow = Math.floor(Math.random() * 9);
-            let randCol = Math.floow(Math.random() * 10);
+            let randCol = Math.floor(Math.random() * 10);
 
             fireRes = boardObj.attemptedShot(randRow, randCol);
         } while(fireRes == 'I');
