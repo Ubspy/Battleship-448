@@ -57,7 +57,7 @@ class ship{
 	* @return rowHead and colHead 
 	*/
 	getHead(){
-		return [parseInt(this.rowHead), parseInt(this.colHead)];
+		return this.squares[0];
 	}
 	
 	/**
