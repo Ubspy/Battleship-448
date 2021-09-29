@@ -81,7 +81,7 @@ function easyFullTest() {
     // Make a new board for the player and the AI 
     aiBoard = new board();
 
-    / TODO: This function needs to be added
+    // TODO: This function needs to be added
     // Makes a new AI object
     easyAI = new AI("easy");
 
@@ -125,8 +125,8 @@ function easyRandomTest() {
     // TODO: This needs to be implemented
     let easyAI = new AI("easy");
     
-    let aiOneBoard = new board();
-    let aiTwoBoard = new board();
+    let aiOneBoard = new board(6);
+    let aiTwoBoard = new board(6);
 
     for(let i = 0; i < 30; i++) {
         // TODO: This needs to be implemented
