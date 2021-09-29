@@ -105,7 +105,7 @@ function easyFullTest() {
     for(let y = 0; y < 9; y++) {
         for(let x = 0; x < 10; x++) {
             if(aiBoard.board[y][x] instanceof ship) {
-                let boat = aiBoard[y][x];
+                let boat = aiBoard.board[y][x];
 
                 // TODO: This function needs to be added
                 // AND full with itself so once it's false it can't be true again
@@ -125,7 +125,8 @@ function easyFullTest() {
 // We then compare the boards to see how random the firing is
 function easyRandomTest() {
     // TODO: This needs to be implemented
-    let easyAi = new AI("easy");
+    let easyAI = new AI("easy");
+    
     let aiOneBoard = new board(6);
     let aiTwoBoard = new board(6);
 
@@ -135,9 +136,9 @@ function easyRandomTest() {
         easyAI.fire(aiTwoBoard); // TODO: Implement this function
     }
 
-    // Get a score of how random is from 0 to 2 based on how many of the squares of the 30 turns are different
-    // 0 means no randomness, and two means it's too random, the closer to one the better, but anywhere from 1 to 2 is acceptable
-    return randomBoardTest(aiOneBoard, aiTwoBoard) / 30;
+    // Get a score of how random is from 0 to 1 based on how many of the squares of the 30 turns are different
+    // 1 means no randomness, and one means it's too random, the closer to one the better
+    return randomBoardTest(aiOneBoard, aiTwoBoard) / 30 - 1;
 }
 
 function validPlacementTest(aiObject) {
@@ -191,15 +192,15 @@ function testHardAI() {
 
 // Helper function to determine how different two distinct boards are
 function randomBoardTest(boardOne, boardTwo) {
-    randomScore = 0;
+    let randScore = 0;
 
     for(var y = 0; y < 9; y++) {
         for(var x = 0; x < 10; x++) {
-            if(boardOne[y][x] != boardTwo[y][x]) {
+            if(boardOne.board[y][x] != boardTwo.board[y][x]) {
                 randScore++;
             }
         }
     }
 
-    return randomScore;
+    return randScore;
 }
