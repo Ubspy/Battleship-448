@@ -168,15 +168,15 @@ function randomShip(length) {
     let shipSquares = [];
 
     if (isHorizontal) {
-        maxRowHead = 9; // index 9 == row 10
-        maxColHead = 11 - length; // e.g. length == 1 => maxColHead == 10, corresponding to 11th column
+        maxRowHead = 8; // index 8 == row 9
+        maxColHead = 10 - length; // e.g. length == 1 => maxColHead == 9, corresponding to 10th column
     } else {
-        maxRowHead = 10 - length;
-        maxColHead = 10;
+        maxRowHead = 9 - length;
+        maxColHead = 9;
     }
 
-    let rowHead = Math.floor(Math.random() * (maxRowHead + 1)); // 0..9
-    let colHead = Math.floor(Math.random() * (maxColHead + 1)); // 0..10
+    let rowHead = Math.floor(Math.random() * (maxRowHead + 1)); // 0..8
+    let colHead = Math.floor(Math.random() * (maxColHead + 1)); // 0..9
 
     if (isHorizontal) {
         for (let i = 0; i < length; i++) {
