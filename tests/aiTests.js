@@ -19,7 +19,9 @@ function testMediumAI() {
     let mediumAI = new AI("medium");
 
     // TODO: This needs to be implemented
-    let ships = mediumAI.placeShips(aiBoard);
+    let ships = mediumAI.placeShips(aiBoard, 6);
+
+    console.log(aiBoard);
 
     let currentHit = null;
 
@@ -27,12 +29,16 @@ function testMediumAI() {
     do
     {
         // TODO: This needs to be implemented
+        console.log("TEST");
         currentHit = mediumAI.fire(aiBoard);  
     } while(currentHit != 'H');
 
     // TODO: This needs to be implemented
     let lastFiredSpot = mediumAI.getLastFire();
-    let firedShip = aiBoard[lastFiredSpot[0]][lastFiredSpot[1]];
+
+    console.log(aiBoard, lastFiredSpot[0]);
+
+    let firedShip = aiBoard.board[lastFiredSpot[0]][lastFiredSpot[1]];
 
     // At this point, we want to make sure this ship size is larger than two, so we'll check for that
     if(firedShip.getSize() <= 2)

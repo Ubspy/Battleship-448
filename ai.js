@@ -27,21 +27,22 @@ class AI {
         }
 
         // Initlalize last found and direction vars
-        this.lastFound = "";
-        this.lastDir = "";
+        this.lastFound = [];
+        this.lastDir = [];
 
         // We also want a variable for the last ship we fired on
-        this.lastFiredOn = "";
+        this.lastFiredOn = [];
 
-        // TODO: Account for input
+        // We need to track the adjacent squares we've fired on
+        this.triedAdjacent = [];
     }
 
-    /**
-     *
-    **/
-    fire(boardMatrix) {
+    fire(boardObj) {
         if(this.mode == 0) {
-            this.#easyFire(boardMatrix);
+            return this.#easyFire(boardObj);
+        }
+        else if(this.mode == 1) {
+            return this.#mediumFire(boardObj);
         }
         else if (this.mode == 1) {
             this.#mediumFire(boardMatrix);
@@ -56,12 +57,14 @@ class AI {
      * @param boardObj Board The board object that the AI owns in the game, will change the contents of the array to fire
     **/
     #easyFire(boardObj) {
-       let fireRes = "";
+        let fireRes = "";
 
         do {
             // Fire randomly and store the result
             fireRes = this.#fireRandomly(boardObj);
-       } while(fireRes == 'I');
+        } while(fireRes == 'I');
+        
+        return fireRes;
     }
 
     /**
@@ -76,14 +79,55 @@ class AI {
 
             // Now we want to see if we hit something
             if(fireRes == 'H') {
-               this.lastFound = this.lastFiredOn; 
+                this.lastFound = this.lastFiredOn;
+                console.log(`Found first ship at (${this.lastFiredOn[1]}, ${this.lastFiredOn[0]})`);
             }
+
+            return fireRes;
         }
         // If we get here then we know there's a ship we need to keep firing at it
-        // We should check if we have another hit that wasn't the lastFound location
-        else if(this.lastFound == this.lastFiredOn) {
-            // Now we need to fire randomly adjacent to this square
-            // TODO: Somehow track what squares were hit
+        // We want to check the last concrete direction, because that's how we'll know if we need to stop firing randomly
+        else if(this.lastDir == "")
+        {
+            // Here we need to still be firing randomly, so we need to pick a direction to fire in
+            let randDirX = Math.floor(Math.random() * 2) - 1; // This will generate a far from -1 to 1
+            let randDirY = (randDirX != 0) ? 0 : Math.floor(Math.random() * 2 - 1); // If the x direction isn't 0, then choose a random Y, otherwise no Y direction
+
+            let randDir = [randDirY, randDirX];
+
+            console.log(this.lastFound);
+
+            // Create a new location from the last found ship and the random direction
+            let newLoc = this.lastFound.map((coord, i) => coord + randDir[i]);
+
+            // First we want to see if this is a repeat location
+            if(this.triedAdjacent.indexOf(newLoc) >= 0) {
+                // If it is, then we just try to fire again, and break out of this function call afterwards
+                return this.#mediumFire(boardObj);
+            }
+
+            let fireRes = boardObj.attemptedShot(newLoc[0], newLoc[1]);
+
+            if(fireRes == 'H') {
+                // If we hit, we need to set our direction
+                this.lastDir = [randDirY, randDirX];
+
+                // We also want to clear the attempted adjacent arr
+                this.triedAdjacent = [];
+
+                console.log(`Hit next at: (${newLoc[1]}, ${newLoc[0]})`);
+                console.log(`Has direction: (${randDirX}, ${randDirY})`);
+            }
+            else {
+                // Here we've missed, so we want to update the triedAdjacent var
+                this.triedAdjacent.push(newLoc);
+            }
+
+            // We want to update the last fired on var
+            this.lastFiredOn = newLoc;
+
+            // Return fire result
+            return fireRes;
         }
     }
 
@@ -141,6 +185,10 @@ class AI {
                 // otherwise, keep proposing random ships
             }
         }
+    }
+
+    getLastFire() {
+        return this.lastFiredOn;
     }
 }
 
