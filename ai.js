@@ -82,6 +82,23 @@ class AI {
     }
 
     /**
+     * Private member function to handle firing for the hard AI implementation.
+     * 
+     * Hits a ship every shot. Cheats.
+     * @param {*} boardObj The board to fire at
+     */
+    #hardFire(boardObj) {
+        // Find the first ship square that hasn't been shot at, and shoot at it
+        for (let i = 0; i < 9; i++) {
+            for (let j = 0; j < 10; j++) {
+                if (boardObj.getSquare(i, j) == 'S') {
+                    boardObj.attemptedShot(i, j);
+                }
+            }
+        }
+    }
+
+    /**
      * Private member function to randomly fire on a board
      * @param boardObj Board The board object to randomly fire on
     **/
