@@ -43,6 +43,12 @@ class AI {
         if(this.mode == 0) {
             this.#easyFire(boardMatrix);
         }
+        else if (this.mode == 1) {
+            this.#mediumFire(boardMatrix);
+        }
+        else if (this.mode == 2) {
+            this.#hardFire(boardMatrix);
+        }
     }
 
     /**
@@ -82,6 +88,23 @@ class AI {
     }
 
     /**
+     * Private member function to handle firing for the hard AI implementation.
+     * 
+     * Hits a ship every shot. Cheats.
+     * @param {*} boardObj The board to fire at
+     */
+    #hardFire(boardObj) {
+        // Find the first ship square that hasn't been shot at, and shoot at it
+        for (let i = 0; i < 9; i++) {
+            for (let j = 0; j < 10; j++) {
+                if (boardObj.getSquare(i, j) == 'S') {
+                    boardObj.attemptedShot(i, j);
+                }
+            }
+        }
+    }
+
+    /**
      * Private member function to randomly fire on a board
      * @param boardObj Board The board object to randomly fire on
     **/
@@ -102,17 +125,17 @@ class AI {
      * For example, placeShips(board, 3) will first place a ship of size 1, then a ship of size 2, then
      * a ship of size 3.
      * 
-     * @param {*} board The board object to place ships on
+     * @param {*} boardObj The board object to place ships on
      * @param {*} numberOfShips The number of ships to place
      */
-    placeShips(board, numberOfShips) {
+    placeShips(boardObj, numberOfShips) {
         for (let i = 1; i <= numberOfShips; i++) { // for the number of ships we want to place
             while(true) {
                 let proposedShip = randomShip(i); // propose a placement for a ship of size i
                 // check if every coordinate of the proposed ship is free space
-                if (proposedShip.every(([r, c]) => !(board.board[r][c] instanceof ship))) {
+                if (proposedShip.every(([r, c]) => !(boardObj.board[r][c] instanceof ship))) {
                     // place the ship if so
-                    board.placeShip(new ship(i, 2, proposedShip[0][0], proposedShip[0][1]), proposedShip[i-1][0], proposedShip[i-1][1]);
+                    boardObj.placeShip(new ship(i, 2, proposedShip[0][0], proposedShip[0][1]), proposedShip[i-1][0], proposedShip[i-1][1]);
                     break;
                 }
                 // otherwise, keep proposing random ships
@@ -145,15 +168,15 @@ function randomShip(length) {
     let shipSquares = [];
 
     if (isHorizontal) {
-        maxRowHead = 9; // index 9 == row 10
-        maxColHead = 11 - length; // e.g. length == 1 => maxColHead == 10, corresponding to 11th column
+        maxRowHead = 8; // index 8 == row 9
+        maxColHead = 10 - length; // e.g. length == 1 => maxColHead == 9, corresponding to 10th column
     } else {
-        maxRowHead = 10 - length;
-        maxColHead = 10;
+        maxRowHead = 9 - length;
+        maxColHead = 9;
     }
 
-    let rowHead = Math.floor(Math.random() * (maxRowHead + 1)); // 0..9
-    let colHead = Math.floor(Math.random() * (maxColHead + 1)); // 0..10
+    let rowHead = Math.floor(Math.random() * (maxRowHead + 1)); // 0..8
+    let colHead = Math.floor(Math.random() * (maxColHead + 1)); // 0..9
 
     if (isHorizontal) {
         for (let i = 0; i < length; i++) {

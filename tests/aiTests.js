@@ -183,15 +183,12 @@ function testHardAI() {
     // Has the AI fire 6+5+4+3+2+1 = 21 times. Since it cheats, it should have hit every time and not missed a single shot.
     let ai = new AI("hard");
 
-    let board = new board(6);
-
-    ai.placeShips(board, 6);
-
+    let brd = new board();
+    ai.placeShips(brd, 6);
     for (let i = 0; i < 21; i++) {
         ai.fire();
     }
-
-    return board.allSunk();
+    return brd.allSunk();
 }
 
 // Helper function to determine how different two distinct boards are
