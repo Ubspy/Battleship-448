@@ -125,17 +125,17 @@ class AI {
      * For example, placeShips(board, 3) will first place a ship of size 1, then a ship of size 2, then
      * a ship of size 3.
      * 
-     * @param {*} board The board object to place ships on
+     * @param {*} boardObj The board object to place ships on
      * @param {*} numberOfShips The number of ships to place
      */
-    placeShips(board, numberOfShips) {
+    placeShips(boardObj, numberOfShips) {
         for (let i = 1; i <= numberOfShips; i++) { // for the number of ships we want to place
             while(true) {
                 let proposedShip = randomShip(i); // propose a placement for a ship of size i
                 // check if every coordinate of the proposed ship is free space
-                if (proposedShip.every(([r, c]) => !(board.board[r][c] instanceof ship))) {
+                if (proposedShip.every(([r, c]) => !(boardObj.board[r][c] instanceof ship))) {
                     // place the ship if so
-                    board.placeShip(new ship(i, 2, proposedShip[0][0], proposedShip[0][1]), proposedShip[i-1][0], proposedShip[i-1][1]);
+                    boardObj.placeShip(new ship(i, 2, proposedShip[0][0], proposedShip[0][1]), proposedShip[i-1][0], proposedShip[i-1][1]);
                     break;
                 }
                 // otherwise, keep proposing random ships
