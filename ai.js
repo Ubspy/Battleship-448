@@ -115,6 +115,7 @@ class AI {
                 // We also want to clear the attempted adjacent arr
                 this.triedAdjacent = [];
 
+                // TODO: Remove debug
                 console.log(`Hit next at: (${newLoc[1]}, ${newLoc[0]})`);
                 console.log(`Has direction: (${randDirX}, ${randDirY})`);
             }
