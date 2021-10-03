@@ -29,14 +29,11 @@ function testMediumAI() {
     do
     {
         // TODO: This needs to be implemented
-        console.log("TEST");
         currentHit = mediumAI.fire(aiBoard);  
     } while(currentHit != 'H');
 
     // TODO: This needs to be implemented
     let lastFiredSpot = mediumAI.getLastFire();
-
-    console.log(aiBoard, lastFiredSpot[0]);
 
     let firedShip = aiBoard.board[lastFiredSpot[0]][lastFiredSpot[1]];
 
@@ -56,6 +53,7 @@ function testMediumAI() {
         // If we hit, break from the loop
         if(currentHit == 'H')
         {
+            console.log(`Adjacent hit`);
             break;
         }
     }
@@ -63,19 +61,24 @@ function testMediumAI() {
     // If we get through the for loop and we did not hit anything, the test failed
     if(currentHit == 'M')
     {
+        console.log('No adjacent hit');
         return false;
-    }
+    } 
+
+    console.log(firedShip.getSize());
 
     // If it makes it all the way then our AI did it right, and we should be able to then keep going for the size of the ship to sink it
     // We will fire two less than the ship size since we already fired on two of the squared
     // We fire once more though incase it reached the end of the ship and needs to go back
     for(var i = 0; i < firedShip.getSize() - 1; i++)
     {
+        console.log(i);
         // TODO: This needs to be implemented
         mediumAI.fire(aiBoard);
     }
 
     // At this point the ship should be sunk, if it's not then the AI doesn't work properly
+    console.log('Sunk ship')
     return firedShip.isSunk(); 
 }
 

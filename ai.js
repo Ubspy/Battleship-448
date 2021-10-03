@@ -72,64 +72,76 @@ class AI {
      * @param boardObj Board The board object that the AI should fire on
     **/
     #mediumFire(boardObj) {
+        // TODO: Account for possibly random firing onto an 'I' square
         // First thing we want to do here is make sure we don't have a ship we're currently trying to sink
+
+        let fireRes = "";
+
         if(this.lastFound == "") {
             // If this is the case, we fire randomly
-            let fireRes = this.#fireRandomly(boardObj);
+            fireRes = this.#fireRandomly(boardObj);
 
             // Now we want to see if we hit something
             if(fireRes == 'H') {
                 this.lastFound = this.lastFiredOn;
                 console.log(`Found first ship at (${this.lastFiredOn[1]}, ${this.lastFiredOn[0]})`);
             }
-
-            return fireRes;
         }
         // If we get here then we know there's a ship we need to keep firing at it
         // We want to check the last concrete direction, because that's how we'll know if we need to stop firing randomly
-        else if(this.lastDir == "")
-        {
-            // Here we need to still be firing randomly, so we need to pick a direction to fire in
-            let randDirX = Math.floor(Math.random() * 2) - 1; // This will generate a far from -1 to 1
-            let randDirY = (randDirX != 0) ? 0 : Math.floor(Math.random() * 2 - 1); // If the x direction isn't 0, then choose a random Y, otherwise no Y direction
+        else if(this.lastDir == "") {
+            fireRes = this.#fireRandomlyAdjacent(boardObj);
+        }
+        else {
+            // In this case, we have a direction, so we want to continue firing in that new direction
 
-            let randDir = [randDirY, randDirX];
+            // Get new location from the last fired on spot, and adding the known direction to it
+            let newLoc = this.lastFiredOn.map((coord, i) => coord + this.lastDir[i]);
 
-            console.log(this.lastFound);
+            // Fire on the next spot we think a ship it at 
+            fireRes = boardObj.attemptedShot(newLoc[0], newLoc[1]);
 
-            // Create a new location from the last found ship and the random direction
-            let newLoc = this.lastFound.map((coord, i) => coord + randDir[i]);
+            console.log(newLoc, fireRes);
 
-            // First we want to see if this is a repeat location
-            if(this.triedAdjacent.indexOf(newLoc) >= 0) {
-                // If it is, then we just try to fire again, and break out of this function call afterwards
+            // If any of the coordinates for the new location are negative, we abandon ship (pun intended), and reverse the direction
+            if(!newLoc.every(coord => coord >= 0))
+            {
+                // Reverse direction time
+                // If we got here this means that we've gone off board, so the rest of the ship that wasn't sunk
+                // so we'll need to go back and from the original direction
+                this.lastDir = this.lastDir.map(x => x * (-1));
+
+                // Same reasoning as below in fireRes == 'M' clause
+                this.lastFiredOn = this.lastFound;
+
+                // Fire again now that we've corrected the OOB mistake
                 return this.#mediumFire(boardObj);
             }
 
-            let fireRes = boardObj.attemptedShot(newLoc[0], newLoc[1]);
+            // TODO: Check for OOB hit
+            if(fireRes == 'M') {
+                // If it's a miss, then we need to go back in the other direction
+                // There's a good chance that the first square of a ship we find is in the middle, so we'll need to reverse the direction
+                this.lastDir = this.lastDir.map(x => x * (-1));
 
-            if(fireRes == 'H') {
-                // If we hit, we need to set our direction
-                this.lastDir = [randDirY, randDirX];
-
-                // We also want to clear the attempted adjacent arr
-                this.triedAdjacent = [];
-
-                // TODO: Remove debug
-                console.log(`Hit next at: (${newLoc[1]}, ${newLoc[0]})`);
-                console.log(`Has direction: (${randDirX}, ${randDirY})`);
+                // For simplicity purposes, we're also going to set the lastFiredOn variable to the original found location
+                // While not entirely accurate, makes the algorithm easier to code
+                this.lastFiredOn = this.lastFound;
+            } else {
+                // If the ship wasn't sunk, just keep the pain train going
+                this.lastFiredOn = newLoc;
             }
-            else {
-                // Here we've missed, so we want to update the triedAdjacent var
-                this.triedAdjacent.push(newLoc);
-            }
-
-            // We want to update the last fired on var
-            this.lastFiredOn = newLoc;
-
-            // Return fire result
-            return fireRes;
         }
+
+        // Before we continue, we need to make sure the ship has sunk (and if it's a ship at all)
+        if(boardObj.board[this.lastFiredOn[0]][this.lastFiredOn[1]] instanceof ship && boardObj.board[this.lastFiredOn[0]][this.lastFiredOn[1]].isSunk()) {
+            // In this case, if the ship is sunk, then we want to reset everything we have so the AI can keep looking for new ships to fire 
+            this.lastFound = [];
+            this.lastFiredOn = [];
+            this.lastDir = [];
+        }
+
+        return fireRes;
     }
 
     /**
@@ -161,6 +173,58 @@ class AI {
         this.lastFiredOn = [randRow, randCol];
 
         return boardObj.attemptedShot(randRow, randCol);
+    }
+
+    /**
+     * This will fire randomly at the board given based off of the first position it found a ship at
+     * @param boardObj board The board object containing the board we're firing at
+    **/
+    #fireRandomlyAdjacent(boardObj) {
+        // Here we need to still be firing randomly, so we need to pick a direction to fire in
+        let randDirX = Math.floor(Math.random() * 2) - 1; // This will generate a far from -1 to 1
+        let randDirY = (randDirX != 0) ? 0 : Math.floor(Math.random() * 2 - 1); // If the x direction isn't 0, then choose a random Y, otherwise no Y direction
+
+        let randDir = [randDirY, randDirX];
+
+        // Create a new location from the last found ship and the random direction
+        let newLoc = this.lastFound.map((coord, i) => coord + randDir[i]);
+
+        // Check for OOB shot
+        if(!newLoc.every(coord => coord >= 0))
+        {
+            // If OOB, try firing again
+            return this.#fireRandomlyAdjacent(boardObj);
+        }
+
+        // We want to see if this is a repeat location
+        // The way I stored locations makes indexOf not work, so I need to check for it like this, which is gross but not as gross as main.js
+        if(this.triedAdjacent.findIndex(coord => coord[0] == newLoc[0] && coord[1] == newLoc[1]) >= 0) {
+            // If it is, then we just try to fire again, and break out of this function call afterwards
+            return this.#mediumFire(boardObj);
+        }
+
+        let fireRes = boardObj.attemptedShot(newLoc[0], newLoc[1]);
+
+        if(fireRes == 'H') {
+            // If we hit, we need to set our direction
+            this.lastDir = [randDirY, randDirX];
+
+            console.log(`Dir found: (${randDirX}, ${randDirY})`);
+
+            // We also want to clear the attempted adjacent arr
+            this.triedAdjacent = [];
+        }
+        else {
+            // Here we've missed, so we want to update the triedAdjacent var
+            this.triedAdjacent.push(newLoc);
+            console.log(this.triedAdjacent);
+        }
+
+        // We want to update the last fired on var
+        this.lastFiredOn = newLoc;
+
+        // Return fire result
+        return fireRes;
     }
 
     /**
