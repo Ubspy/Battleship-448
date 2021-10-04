@@ -195,7 +195,7 @@ function testHardAI() {
     let brd = new board();
     ai.placeShips(brd, 6);
     for (let i = 0; i < 21; i++) {
-        ai.fire();
+        ai.fire(brd);
     }
     return brd.allSunk();
 }
