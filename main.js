@@ -94,18 +94,31 @@ document.addEventListener("DOMContentLoaded", () => {
         count++;
 	
 		});
+
+	let aiChoice = window.prompt("What level of AI do you want to play against? (0 = human, 1 = easy, 2 = medium, 3 = hard)");
+	while (true)
+	{
+		if (aiChoice <= 3 && aiChoice >= 0){
+			break;
+		}
+		else {
+			aiChoice = window.prompt("Try Again! \n What level of AI do you want to play against? (0 = human, 1 = easy, 2 = medium, 3 = hard)");
+		}
+	}
+
 	// ask user for number of ships to be played with
- 	shipCount = window.prompt("How many ships do you want to play with? (minimum: 1 | maximum: 6"); // need to add checks to make sure an integer between 1 and 6 is passed in
+ 	shipCount = window.prompt("How many ships do you want to play with? (minimum: 1 | maximum: 6)"); // need to add checks to make sure an integer between 1 and 6 is passed in
 	while (true)
 	{
 		if (shipCount<=6 &&shipCount>=1){
 			break;
 		}
 		else {
-			shipCount = window.prompt("Try Again! \n How many ships do you want to play with? (minimum: 1 | maximum: 6");
+			shipCount = window.prompt("Try Again! \n How many ships do you want to play with? (minimum: 1 | maximum: 6)");
 
 		}
-	} 
+	}
+
 	p1Board = new board(shipCount);
 	p2Board = new board(shipCount);
 	startGame(shipCount);
