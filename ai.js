@@ -44,11 +44,8 @@ class AI {
         else if(this.mode == 1) {
             return this.#mediumFire(boardObj);
         }
-        else if (this.mode == 1) {
-            this.#mediumFire(boardMatrix);
-        }
         else if (this.mode == 2) {
-            this.#hardFire(boardMatrix);
+            this.#hardFire(boardObj);
         }
     }
 
