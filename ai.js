@@ -2,9 +2,10 @@ class AI {
 
     /**
      * We're going to have a pseudo enum here, since JS doesn't have enums I'm defining it in the comments here
-     * EASY = 0
-     * MEDIUM = 1
-     * HARD = 2
+     * NONE = 0
+     * EASY = 1
+     * MEDIUM = 2
+     * HARD = 3
     **/
 
     /**
@@ -13,18 +14,21 @@ class AI {
      * @param aiMode String A string containing the mode of the AI
     **/
     constructor(aiMode) {
-        if(aiMode == "easy")
-        {
+        /* 
+        if(aiMode == "none") {
             this.mode = 0;
         }
-        else if(aiMode == "medium")
-        {
+        if(aiMode == "easy") {
             this.mode = 1;
         }
-        else if(aiMode == "hard")
-        {
+        else if(aiMode == "medium") {
             this.mode = 2;
         }
+        else if(aiMode == "hard") {
+            this.mode = 3;
+        } */
+
+        this.mode = aiMode;
 
         // Initlalize last found and direction vars
         this.lastFound = [];
@@ -35,17 +39,26 @@ class AI {
 
         // We need to track the adjacent squares we've fired on
         this.triedAdjacent = [];
+
+        // We need a variable to keep track of backtracking for the medium AI
+        this.backTrackLevel = 0;
+        this.backTracked = true;
+    }
+
+    isActive()
+    {
+        return this.mode != 0;
     }
 
     fire(boardObj) {
-        if(this.mode == 0) {
+        if(this.mode == 1) {
             return this.#easyFire(boardObj);
         }
-        else if(this.mode == 1) {
+        else if(this.mode == 2) {
             return this.#mediumFire(boardObj);
         }
-        else if (this.mode == 2) {
-            this.#hardFire(boardObj);
+        else if (this.mode == 3) {
+            return this.#hardFire(boardObj);
         }
     }
 
@@ -115,26 +128,24 @@ class AI {
                 return this.#mediumFire(boardObj);
             }
 
-            // TODO: Check for OOB hit
             if(fireRes == 'M') {
                 // If it's a miss, then we need to go back in the other direction
                 // There's a good chance that the first square of a ship we find is in the middle, so we'll need to reverse the direction
                 this.lastDir = this.lastDir.map(x => x * (-1));
 
-                // For simplicity purposes, we're also going to set the lastFiredOn variable to the original found location
-                // While not entirely accurate, makes the algorithm easier to code
-                this.lastFiredOn = this.lastFound;
-            } else {
-                // If the ship wasn't sunk, just keep the pain train going
-                this.lastFiredOn = newLoc;
-            }
+                // Set back track level and tell the AI we need to backtrack 
+                this.backTrackLevel++;
+                this.backTracked = false;
+            } 
+
+            // Update board location
+            this.lastFiredOn = newLoc;
         }
 
         // Before we continue, we need to make sure the ship has sunk (and if it's a ship at all)
         if(boardObj.board[this.lastFiredOn[0]][this.lastFiredOn[1]] instanceof ship && boardObj.board[this.lastFiredOn[0]][this.lastFiredOn[1]].isSunk()) {
             // In this case, if the ship is sunk, then we want to reset everything we have so the AI can keep looking for new ships to fire 
             this.lastFound = [];
-            this.lastFiredOn = [];
             this.lastDir = [];
         }
 
@@ -235,6 +246,11 @@ class AI {
      * @param {*} numberOfShips The number of ships to place
      */
     placeShips(boardObj, numberOfShips) {
+        // If the AI isn't active, play no ships
+        if(this.mode == 0) {
+            return;
+        }
+
         for (let i = 1; i <= numberOfShips; i++) { // for the number of ships we want to place
             while(true) {
                 let proposedShip = randomShip(i); // propose a placement for a ship of size i

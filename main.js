@@ -5,6 +5,8 @@ let RshipsPlaced = false;
 let placeHead;
 let placeTail;
 
+let ai;
+
 /** 
 *When this function is called it first checks what value currentTurn holds, either 1 or 2 for player one and player two. 
 *Then the function sets the Boolean value hasShot to false because each turn switch will require the player to shoot again.
@@ -13,7 +15,17 @@ let placeTail;
 *@return none 
 */ 
 function switchTurn(){
-	if(currentTurn == 1){
+    if(ai.isActive()) { 
+        // Take AI shot and update board colors
+        let aiShot = ai.fire(p1Board);
+        updateBoardColors(aiShot, ai.getLastFire()[0], ai.getLastFire()[1]);
+    
+        hasShot = false;
+
+        currentTurn = 1;
+        $("#turn").text("Current Turn: Player 1");
+    }
+    else if(currentTurn == 1){
 		hasShot = false;
 		currentTurn = 2;
 		$("#turn").text("Current Turn: Player 2");
@@ -23,6 +35,36 @@ function switchTurn(){
 		$("#turn").text("Current Turn: Player 1");
 	}
 }
+
+// Yes, I could update the other spots where this code is to use this function, but this code is the most super mario in real life
+// I've ever seen so I'm not even going to bother trying
+function updateBoardColors(outcome, shotRow, shotCol) {
+    if(outcome == 'H'){
+        $('.gridLeft .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').css("background-color", "rgb(255, 0, 0)");
+        $('.gridLeft .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').text("\nH");
+        hasShot = true;
+        
+        console.log(p1Board);
+        console.log(shotRow, shotCol);
+        console.log(p1Board.board[shotRow][shotCol]);
+
+        if(p1Board.board[shotRow][shotCol] instanceof ship && p1Board.board[shotRow][shotCol].isSunk()){
+            $("#mode").text("You sunk your opponents 1x" + p1Board.board[shotRow][shotCol].getSize() + " battleship!");
+        }
+        $('#endTurn').prop('disabled', false);
+        if(p1Board.allSunk()){
+            console.log("p2 wins!");
+            //P2 wins!
+            endGame("Player 2");
+        }
+    } else if (outcome == 'M'){
+        $('.gridLeft .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').css("background-color", "rgb(0, 0, 255)");
+        $('.gridLeft .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').text("\nM");
+        hasShot = true;
+        $('#endTurn').prop('disabled', false);
+    }
+}
+
 /** 
 *hideShips takes in current player turn as a parameter then checks if player one or player two is 
 *currently up. If it is player-one’s turn then player-two’s ships must be hidden for the incoming shot 
@@ -33,7 +75,7 @@ function switchTurn(){
 *@return none 
 */ 
 function hideShips(turn){
-	if(turn == 1){
+	if(turn == 1 && !ai.isActive()){
 		$(".gridLeft .cell").each(function(){
 			if( $(this).css("background-color") == "rgb(128, 128, 128)"){ // if cell is grey, make it transparent
 				$(this).css("background-color", "transparent");
@@ -115,12 +157,16 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 		else {
 			shipCount = window.prompt("Try Again! \n How many ships do you want to play with? (minimum: 1 | maximum: 6)");
-
 		}
 	}
 
 	p1Board = new board(shipCount);
 	p2Board = new board(shipCount);
+
+    // Initialize AI object and place it's ships
+    ai = new AI(aiChoice);
+    ai.placeShips(p2Board, shipCount);
+
 	startGame(shipCount);
 });
 
@@ -502,12 +548,14 @@ function startGame(shipCount){
 			LchooseTail = false;
 			LshipsPlaced = true;
 		}
-		if(RnumShips-1 == shipCount){
+        // If the AI is active then there's the right amount of ships placed
+		if(ai.isActive() || RnumShips-1 == shipCount){
 			$('#startTurn').prop('disabled', false);
 			RshipsPlaced = true;
 			RchooseHead = false;
 			RchooseTail = false;
 		}
-			restoreShips(currentTurn);
+
+		restoreShips(currentTurn);
 	});
 }
