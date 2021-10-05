@@ -137,14 +137,16 @@ document.addEventListener("DOMContentLoaded", () => {
 	
 		});
 
-	let aiChoice = window.prompt("What level of AI do you want to play against? (0 = human, 1 = easy, 2 = medium, 3 = hard)");
+	// ask for choice in AI
+	aiChoice = parseInt(window.prompt("What level of AI do you want to play against? (0 = human, 1 = easy, 2 = medium, 3 = hard)"));
 	while (true)
 	{
 		if (aiChoice <= 3 && aiChoice >= 0){
+			console.log("aiChoice is ", aiChoice);
 			break;
 		}
 		else {
-			aiChoice = window.prompt("Try Again! \n What level of AI do you want to play against? (0 = human, 1 = easy, 2 = medium, 3 = hard)");
+			aiChoice = parseInt(window.prompt("Try Again! \n What level of AI do you want to play against? (0 = human, 1 = easy, 2 = medium, 3 = hard)"));
 		}
 	}
 
