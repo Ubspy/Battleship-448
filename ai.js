@@ -65,6 +65,7 @@ class AI {
     /**
      * The private function to handle firing for the easy mode AI
      * @param boardObj Board The board object that the AI owns in the game, will change the contents of the array to fire
+     * @returns What the shot resulted in. 'H' if hit, 'M' if miss.
     **/
     #easyFire(boardObj) {
         let fireRes = "";
@@ -80,6 +81,7 @@ class AI {
     /**
      * Private member function to handle firing for the medium AI implementation
      * @param boardObj Board The board object that the AI should fire on
+     * @returns What the shot resulted in. 'H' if hit, 'M' if miss.
     **/
     #mediumFire(boardObj) {
         // TODO: Account for possibly random firing onto an 'I' square
@@ -156,14 +158,15 @@ class AI {
      * Private member function to handle firing for the hard AI implementation.
      * 
      * Hits a ship every shot. Cheats.
-     * @param {*} boardObj The board to fire at
+     * @param boardObj The board to fire at
+     * @returns What the shot resulted in ('H', since this mode always lands a hit).
      */
     #hardFire(boardObj) {
         // Find the first ship square that hasn't been shot at, and shoot at it
         for (let i = 0; i < 9; i++) {
             for (let j = 0; j < 10; j++) {
                 if (boardObj.getSquare(i, j) == 'S') {
-                    boardObj.attemptedShot(i, j);
+                    return boardObj.attemptedShot(i, j);
                 }
             }
         }
@@ -172,6 +175,7 @@ class AI {
     /**
      * Private member function to randomly fire on a board
      * @param boardObj Board The board object to randomly fire on
+     * @returns What the shot resulted in. 'H' if hit, 'M' if miss, and 'I' if the square was previously shot at
     **/
     #fireRandomly(boardObj) {
         // Make random row and col, the board is 9 tall and 10 wide
@@ -186,6 +190,7 @@ class AI {
     /**
      * This will fire randomly at the board given based off of the first position it found a ship at
      * @param boardObj board The board object containing the board we're firing at
+     * @returns What the shot resulted in. 'H' if hit, 'M' if miss.
     **/
     #fireRandomlyAdjacent(boardObj) {
         // Here we need to still be firing randomly, so we need to pick a direction to fire in
