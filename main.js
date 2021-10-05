@@ -5,6 +5,11 @@ let RshipsPlaced = false;
 let placeHead;
 let placeTail;
 
+// When in Rome...
+let traps = [false, true, true]
+let trapCount = 2
+let trapSize = 1
+
 /** 
 *When this function is called it first checks what value currentTurn holds, either 1 or 2 for player one and player two. 
 *Then the function sets the Boolean value hasShot to false because each turn switch will require the player to shoot again.
@@ -38,11 +43,17 @@ function hideShips(turn){
 			if( $(this).css("background-color") == "rgb(128, 128, 128)"){ // if cell is grey, make it transparent
 				$(this).css("background-color", "transparent");
 			}
+			if( $(this).css("background-color") == "rgb(255, 165, 0)"){ // if cell is grey, make it transparent
+				$(this).css("background-color", "transparent");
+			}
 		});
 	}
 	else{
 		$(".gridRight .cell").each(function(){
 			if( $(this).css("background-color") == "rgb(128, 128, 128)"){ // if cell is grey, make it transparent
+				$(this).css("background-color", "transparent");
+			}
+			if( $(this).css("background-color") == "rgb(255, 165, 0)"){ // if cell is grey, make it transparent
 				$(this).css("background-color", "transparent");
 			}
 		});
@@ -149,6 +160,9 @@ function restoreShips(turn){
 			if(p2Board.board[row][col] instanceof ship && ($(this).css("background-color") != "rgb(255, 0, 0)")){ // if cell is ship and not a hit set to grey
 				$(this).css("background-color", "grey");
 			}
+			if(p2Board.board[row][col] instanceof trap) {
+				$(this).css("background-color", "orange");
+			}
 		});
 	}
 	else{
@@ -157,6 +171,9 @@ function restoreShips(turn){
 			let col = parseInt($(this).attr('col'));
 		    if(p1Board.board[row][col] instanceof ship && ($(this).css("background-color") != "rgb(255, 0, 0)")){ // if cell is ship and not a hit set to grey
 				$(this).css("background-color", "grey");
+			}
+			if(p1Board.board[row][col] instanceof trap) {
+				$(this).css("background-color", "orange");
 			}
 		});
 	}	
@@ -210,6 +227,9 @@ function startGame(shipCount){
 	Rships = [];
 	let LcolorIndex = 1;
 	let RcolorIndex = 1;
+
+	let placedTraps = [0, 0, 0]
+	let trapArr = [[],[],[]]
 	
 	$('#startTurn').prop('disabled', true);
 	$('#endTurn').prop('disabled', true);
@@ -260,85 +280,156 @@ function startGame(shipCount){
 						}
 					}
 				}
-				}else if(LchooseTail){
-					let isTail = false;
-					for(let i = 0; i < LpossibleTails.length; i++){
-						if(LpossibleTails[i][0] == $(this).attr("row") && LpossibleTails[i][1] == $(this).attr("col")){
-							LtailRow = $(this).attr("row");
-							LtailCol = $(this).attr("col");
-							isTail = true;
-							for(let i = 0; i < LpossibleTails.length; i++){
-								let tempRow = LpossibleTails[i][0];
-								let tempCol = LpossibleTails[i][1];
-								$('.gridLeft .cell[ row = ' + tempRow + '][ col = ' + tempCol + ']').css("background-color", "transparent");
-							}
-						}
-					}
-					if(isTail){
-						// put ship on grid
-						for(let i=0; i < LnumShips-1; i++){ 
-							$('.gridLeft .cell[ row = ' + LheadRow + '][ col = ' + LheadCol + ']').css("background-color", "grey");
-							$('.gridLeft .cell[ row = ' + LtailRow + '][ col = ' + LtailCol + ']').css("background-color", "grey");
-							
-							//fill in space in between
-							if(LheadRow == LtailRow && LheadCol < LtailCol){ //horizontal ship where headCol < tailCol
-								for(let i=1; i< LnumShips-1; i++){
-									let tempCol = (+LheadCol + +i);
-									$('.gridLeft .cell[ row = ' + LheadRow + '][ col = ' + tempCol + ']').css("background-color", "grey");
-								}
-							}
-							else if(LheadRow == LtailRow && LheadCol > LtailCol){ //horizontal ship where headCol > tailCol
-								for(let i=1; i< LnumShips-1; i++){
-									let tempCol = (+LtailCol + +i);
-									$('.gridLeft .cell[ row = ' + LheadRow + '][ col = ' + tempCol + ']').css("background-color", "grey");
-								}
-							}
-							else if(LheadRow < LtailRow && LheadCol == LtailCol){ //vertical ship where headRow < tailRow
-								for(let i=1; i< LnumShips-1; i++){
-									let tempRow = (+LheadRow + +i);
-									$('.gridLeft .cell[ row = ' + tempRow + '][ col = ' + LheadCol + ']').css("background-color", "grey");
-								}
-							}
-							else if(LheadRow > LtailRow && LheadCol == LtailCol){ //vertical ship where headRow > tailRow
-								for(let i=1; i< LnumShips-1; i++){
-									let tempRow = (+LtailRow + +i);
-									$('.gridLeft .cell[ row = ' + tempRow + '][ col = ' + LheadCol + ']').css("background-color", "grey");
-								}
-							}
-						}
-						//check if more boats to place after this, if not choose tail choose head need to be false
-						p1Board.placeShip(Lships[LnumShips-1], LtailRow, LtailCol);
-						LchooseHead = true;
-						LchooseTail = false;
-						LnumShips++;
-					}
-				} 
-			} else if (currentTurn == 2 && !hasShot && RshipsPlaced) {
-				shotRow = parseInt($(this).attr("row"));
-				shotCol = parseInt($(this).attr("col"));
-				outcome = p1Board.attemptedShot(shotRow, shotCol);
-				if(outcome == 'H'){
-					$('.gridLeft .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').css("background-color", "rgb(255, 0, 0)");
-					$('.gridLeft .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').text("\nH");
-					hasShot = true;
-					
-					if(p1Board.board[shotRow][shotCol] instanceof ship && p1Board.board[shotRow][shotCol].isSunk()){
-						$("#mode").text("You sunk your opponents 1x" + p1Board.board[shotRow][shotCol].getSize() + " battleship!");
-					}
-					$('#endTurn').prop('disabled', false);
-					if(p1Board.allSunk()){
-						console.log("p2 wins!");
-						//P2 wins!
-						endGame("Player 2");
-					}
-				} else if (outcome == 'M'){
-					$('.gridLeft .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').css("background-color", "rgb(0, 0, 255)");
-					$('.gridLeft .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').text("\nM");
-					hasShot = true;
-					$('#endTurn').prop('disabled', false);
-				}
-				
 			}
+			else if(LchooseTail){
+				let isTail = false;
+				for(let i = 0; i < LpossibleTails.length; i++){
+					if(LpossibleTails[i][0] == $(this).attr("row") && LpossibleTails[i][1] == $(this).attr("col")){
+						LtailRow = $(this).attr("row");
+						LtailCol = $(this).attr("col");
+						isTail = true;
+						for(let i = 0; i < LpossibleTails.length; i++){
+							let tempRow = LpossibleTails[i][0];
+							let tempCol = LpossibleTails[i][1];
+							$('.gridLeft .cell[ row = ' + tempRow + '][ col = ' + tempCol + ']').css("background-color", "transparent");
+						}
+					}
+				}
+				if(isTail){
+					// put ship on grid
+					for(let i=0; i < LnumShips-1; i++){ 
+						$('.gridLeft .cell[ row = ' + LheadRow + '][ col = ' + LheadCol + ']').css("background-color", "grey");
+						$('.gridLeft .cell[ row = ' + LtailRow + '][ col = ' + LtailCol + ']').css("background-color", "grey");
+						
+						//fill in space in between
+						if(LheadRow == LtailRow && LheadCol < LtailCol){ //horizontal ship where headCol < tailCol
+							for(let i=1; i< LnumShips-1; i++){
+								let tempCol = (+LheadCol + +i);
+								$('.gridLeft .cell[ row = ' + LheadRow + '][ col = ' + tempCol + ']').css("background-color", "grey");
+							}
+						}
+						else if(LheadRow == LtailRow && LheadCol > LtailCol){ //horizontal ship where headCol > tailCol
+							for(let i=1; i< LnumShips-1; i++){
+								let tempCol = (+LtailCol + +i);
+								$('.gridLeft .cell[ row = ' + LheadRow + '][ col = ' + tempCol + ']').css("background-color", "grey");
+							}
+						}
+						else if(LheadRow < LtailRow && LheadCol == LtailCol){ //vertical ship where headRow < tailRow
+							for(let i=1; i< LnumShips-1; i++){
+								let tempRow = (+LheadRow + +i);
+								$('.gridLeft .cell[ row = ' + tempRow + '][ col = ' + LheadCol + ']').css("background-color", "grey");
+							}
+						}
+						else if(LheadRow > LtailRow && LheadCol == LtailCol){ //vertical ship where headRow > tailRow
+							for(let i=1; i< LnumShips-1; i++){
+								let tempRow = (+LtailRow + +i);
+								$('.gridLeft .cell[ row = ' + tempRow + '][ col = ' + LheadCol + ']').css("background-color", "grey");
+							}
+						}
+					}
+					//check if more boats to place after this, if not choose tail choose head need to be false
+					p1Board.placeShip(Lships[LnumShips-1], LtailRow, LtailCol);
+					LchooseHead = true;
+					LchooseTail = false;
+					LnumShips++;
+				}
+			} 
+		} 
+		else if (currentTurn == 1 && placedTraps[1] < trapCount) {
+			let tRow = $(this).attr("row");
+			let tCol = $(this).attr("col");
+			if((parseInt(tRow)-trapSize>=0)&&(parseInt(tCol)-trapSize>=0)&&(parseInt(tRow)+trapSize<9)&&(parseInt(tCol)+trapSize<10)) {
+				// Time to place a trap square
+				let clear = true;
+				console.log("checking for valid trap location")
+				for(let i=0;i<(trapSize*2)+1; i++) {
+					for(let j=0;j<(trapSize*2)+1; j++) {
+						if(p1Board.boardState(parseInt(tRow)-trapSize+i,parseInt(tCol)-trapSize+j)!=0) {
+							clear = false;
+							console.log(p1Board.boardState(parseInt(tRow)-trapSize+i,parseInt(tCol)-trapSize+j))
+						}
+					}
+				}
+				if(clear) {
+					placedTraps[1]++
+					let tempTrap = new trap(tRow, tCol, trapSize)
+					trapArr[1].push(tempTrap)
+					p1Board.placeTrap(tempTrap, tRow, tCol, trapSize)
+					console.log("trap placed")
+					for(let i=0;i<9; i++) {
+						for(let j=0;j<10; j++) {
+							if(p1Board.boardState(i,j) instanceof trap) {
+								$('.gridLeft .cell[ row = ' + i.toString() + '][ col = ' + j.toString() + ']').css("background-color", "orange")
+							}
+						}
+					}
+				}
+				if(placedTraps[1]==trapCount) {
+					$('#endTurn').prop('disabled', false)
+				}
+			}
+		}
+		else if (currentTurn == 2 && !hasShot && RshipsPlaced && !traps[2]) {
+			shotRow = parseInt($(this).attr("row"));
+			shotCol = parseInt($(this).attr("col"));
+			outcome = p1Board.attemptedShot(shotRow, shotCol);
+			if(outcome == 'T') {
+				//fuck
+				let trapCenter = p1Board.boardState(shotRow, shotCol).getPos()
+				for(let i=0;i<trapSize*2+1;i++) {
+					for(let j=0;j<trapSize*2+1;j++) {
+						p1Board.clear(trapCenter[0]-trapSize+i,trapCenter[1]-trapSize+j)
+						console.log("clearing traps nine times")
+						outcome = p2Board.attemptedShot(trapCenter[0]-trapSize+i,trapCenter[1]-trapSize+j)
+						if(outcome == 'H'){
+							$('.gridRight .cell[ row = ' + (trapCenter[0]-trapSize+i) + '][ col = ' + (trapCenter[1]-trapSize+j) + ']').css("background-color", "rgb(255, 0, 0)");
+							$('.gridRight .cell[ row = ' + (trapCenter[0]-trapSize+i) + '][ col = ' + (trapCenter[1]-trapSize+j) + ']').text("\nH");
+							hasShot = true;
+							
+							if(p2Board.board[trapCenter[0]-trapSize+i][trapCenter[1]-trapSize+j] instanceof ship && p2Board.board[trapCenter[0]-trapSize+i][trapCenter[1]-trapSize+j].isSunk()){
+								$("#mode").text("Your opponents trap sunk your 1x" + p2Board.board[trapCenter[0]-trapSize+i][trapCenter[1]-trapSize+j].getSize() + " battleship!");
+							}
+							$('#endTurn').prop('disabled', false);
+							if(p2Board.allSunk()){
+								console.log("p1 wins!");
+								//P1 wins!
+								endGame("Player 1");
+							}
+						} 
+						else if (outcome == 'M'){
+							$('.gridRight .cell[ row = ' + (trapCenter[0]-trapSize+i) + '][ col = ' + (trapCenter[1]-trapSize+j) + ']').css("background-color", "rgb(0, 0, 255)");
+							$('.gridRight .cell[ row = ' + (trapCenter[0]-trapSize+i) + '][ col = ' + (trapCenter[1]-trapSize+j) + ']').text("\nM");
+							hasShot = true;
+							$('#endTurn').prop('disabled', false);
+						}
+					}
+				}
+				$("#mode").text("You've fallen into their trap!")
+				outcome = p1Board.attemptedShot(shotRow, shotCol)
+			}
+			if(outcome == 'H'){
+				$('.gridLeft .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').css("background-color", "rgb(255, 0, 0)");
+				$('.gridLeft .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').text("\nH");
+				hasShot = true;
+				
+				if(p1Board.board[shotRow][shotCol] instanceof ship && p1Board.board[shotRow][shotCol].isSunk()){
+					$("#mode").text("You sunk your opponents 1x" + p1Board.board[shotRow][shotCol].getSize() + " battleship!");
+				}
+				$('#endTurn').prop('disabled', false);
+				if(p1Board.allSunk()){
+					console.log("p2 wins!");
+					//P2 wins!
+					endGame("Player 2");
+				}
+			} 
+			else if (outcome == 'M'){
+				$('.gridLeft .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').css("background-color", "rgb(0, 0, 255)");
+				$('.gridLeft .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').text("\nM");
+				hasShot = true;
+				$('#endTurn').prop('disabled', false);
+			}
+			
+		}
 		if(currentTurn == 1 && hasShot && LnumShips-1 == shipCount){
 			$('#endTurn').prop('disabled', false);
 		}
@@ -391,87 +482,158 @@ function startGame(shipCount){
 						
 					}
 				}
-				}else if(RchooseTail){
-					let isTail = false;
-					for(let i = 0; i < RpossibleTails.length; i++){
-						if(RpossibleTails[i][0] == $(this).attr("row") && RpossibleTails[i][1] == $(this).attr("col")){
-							RtailRow = $(this).attr("row");
-							RtailCol = $(this).attr("col");
-							isTail = true;
-							for(let i = 0; i < RpossibleTails.length; i++){
-								let tempRow = RpossibleTails[i][0];
-								let tempCol = RpossibleTails[i][1];
-								$('.gridRight .cell[ row = ' + tempRow + '][ col = ' + tempCol + ']').css("background-color", "transparent");
-							}
-						}
-					}
-					if(isTail){
-						// put ship on grid
-						for(let i=0; i < RnumShips-1; i++){ 
-							$('.gridRight .cell[ row = ' + RheadRow + '][ col = ' + RheadCol + ']').css("background-color", "grey");
-							$('.gridRight .cell[ row = ' + RtailRow + '][ col = ' + RtailCol + ']').css("background-color", "grey");
-							
-							//fill in space in between
-							if(RheadRow == RtailRow && RheadCol < RtailCol){ //horizontal ship where headCol < tailCol
-								for(let i=1; i<RnumShips-1; i++){
-									let tempCol = (+RheadCol + +i);
-									$('.gridRight .cell[ row = ' + RheadRow + '][ col = ' + tempCol + ']').css("background-color", "grey");
-								}
-							}
-							else if(RheadRow == RtailRow && RheadCol > RtailCol){ //horizontal ship where headCol > tailCol
-								for(let i=1; i< RnumShips-1; i++){
-									let tempCol = (+RtailCol + +i);
-									$('.gridRight .cell[ row = ' + RheadRow + '][ col = ' + tempCol + ']').css("background-color", "grey");
-								}
-							}
-							else if(RheadRow < RtailRow && RheadCol == RtailCol){ //vertical ship where headRow < tailRow
-								for(let i=1; i<RnumShips-1; i++){
-									let tempRow = (+RheadRow + +i);
-									$('.gridRight .cell[ row = ' + tempRow + '][ col = ' + RheadCol + ']').css("background-color", "grey");
-								}
-							}
-							else if(RheadRow > RtailRow && RheadCol == RtailCol){ //vertical ship where headRow > tailRow
-								for(let i=1; i<RnumShips-1; i++){
-									let tempRow = (+RtailRow + +i);
-									$('.gridRight .cell[ row = ' + tempRow + '][ col = ' + RheadCol + ']').css("background-color", "grey");
-								}
-							}
-						}
-						//check if more boats to place after this, if not choose tail choose head need to be false
-						p2Board.placeShip(Rships[RnumShips-1], RtailRow, RtailCol);
-						RchooseHead = true;
-						RchooseTail = false;
-						RnumShips++;
-					}
-				}
-			} else if ((currentTurn == 1 && !hasShot) && LshipsPlaced) {
-					shotRow = parseInt($(this).attr("row"));
-					shotCol = parseInt($(this).attr("col"));
-					outcome = p2Board.attemptedShot(shotRow, shotCol);
-					if(outcome == 'H'){
-						$('.gridRight .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').css("background-color", "rgb(255, 0, 0)");
-						$('.gridRight .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').text("\nH");
-						hasShot = true;
-						
-						if(p2Board.board[shotRow][shotCol] instanceof ship && p2Board.board[shotRow][shotCol].isSunk()){
-							$("#mode").text("You sunk your opponents 1x" + p2Board.board[shotRow][shotCol].getSize() + " battleship!");
-						}
-						$('#endTurn').prop('disabled', false);
-						if(p2Board.allSunk()){
-							console.log("p1 wins!");
-							//P1 wins!
-							endGame("Player 1");
-						}
-					} else if (outcome == 'M'){
-						$('.gridRight .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').css("background-color", "rgb(0, 0, 255)");
-						$('.gridRight .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').text("\nM");
-						hasShot = true;
-						$('#endTurn').prop('disabled', false);
-					}
-				}
-			if(currentTurn == 2 && hasShot && RnumShips-1 == shipCount){
-				$('#endTurn').prop('disabled', false);
 			}
+			else if(RchooseTail){
+				let isTail = false;
+				for(let i = 0; i < RpossibleTails.length; i++){
+					if(RpossibleTails[i][0] == $(this).attr("row") && RpossibleTails[i][1] == $(this).attr("col")){
+						RtailRow = $(this).attr("row");
+						RtailCol = $(this).attr("col");
+						isTail = true;
+						for(let i = 0; i < RpossibleTails.length; i++){
+							let tempRow = RpossibleTails[i][0];
+							let tempCol = RpossibleTails[i][1];
+							$('.gridRight .cell[ row = ' + tempRow + '][ col = ' + tempCol + ']').css("background-color", "transparent");
+						}
+					}
+				}
+				if(isTail){
+					// put ship on grid
+					for(let i=0; i < RnumShips-1; i++){ 
+						$('.gridRight .cell[ row = ' + RheadRow + '][ col = ' + RheadCol + ']').css("background-color", "grey");
+						$('.gridRight .cell[ row = ' + RtailRow + '][ col = ' + RtailCol + ']').css("background-color", "grey");
+						
+						//fill in space in between
+						if(RheadRow == RtailRow && RheadCol < RtailCol){ //horizontal ship where headCol < tailCol
+							for(let i=1; i<RnumShips-1; i++){
+								let tempCol = (+RheadCol + +i);
+								$('.gridRight .cell[ row = ' + RheadRow + '][ col = ' + tempCol + ']').css("background-color", "grey");
+							}
+						}
+						else if(RheadRow == RtailRow && RheadCol > RtailCol){ //horizontal ship where headCol > tailCol
+							for(let i=1; i< RnumShips-1; i++){
+								let tempCol = (+RtailCol + +i);
+								$('.gridRight .cell[ row = ' + RheadRow + '][ col = ' + tempCol + ']').css("background-color", "grey");
+							}
+						}
+						else if(RheadRow < RtailRow && RheadCol == RtailCol){ //vertical ship where headRow < tailRow
+							for(let i=1; i<RnumShips-1; i++){
+								let tempRow = (+RheadRow + +i);
+								$('.gridRight .cell[ row = ' + tempRow + '][ col = ' + RheadCol + ']').css("background-color", "grey");
+							}
+						}
+						else if(RheadRow > RtailRow && RheadCol == RtailCol){ //vertical ship where headRow > tailRow
+							for(let i=1; i<RnumShips-1; i++){
+								let tempRow = (+RtailRow + +i);
+								$('.gridRight .cell[ row = ' + tempRow + '][ col = ' + RheadCol + ']').css("background-color", "grey");
+							}
+						}
+					}
+					//check if more boats to place after this, if not choose tail choose head need to be false
+					p2Board.placeShip(Rships[RnumShips-1], RtailRow, RtailCol);
+					RchooseHead = true;
+					RchooseTail = false;
+					RnumShips++;
+				}
+			}
+		} 
+		else if (currentTurn == 2 && placedTraps[2] < trapCount) {
+			let tRow = $(this).attr("row");
+			let tCol = $(this).attr("col");
+			if((parseInt(tRow)-trapSize>=0)&&(parseInt(tCol)-trapSize>=0)&&(parseInt(tRow)+trapSize<9)&&(parseInt(tCol)+trapSize<10)) {
+				// Time to place a trap square
+				let clear = true;
+				console.log("checking for valid trap location")
+				for(let i=0;i<(trapSize*2)+1; i++) {
+					for(let j=0;j<(trapSize*2)+1; j++) {
+						if(p2Board.boardState(parseInt(tRow)-trapSize+i,parseInt(tCol)-trapSize+j)!=0) {
+							clear = false;
+							console.log(p2Board.boardState(parseInt(tRow)-trapSize+i,parseInt(tCol)-trapSize+j))
+						}
+					}
+				}
+				if(clear) {
+					placedTraps[2]++
+					let tempTrap = new trap(tRow, tCol, trapSize)
+					trapArr[2].push(tempTrap)
+					p2Board.placeTrap(tempTrap, tRow, tCol, trapSize)
+					console.log("trap placed")
+					for(let i=0;i<9; i++) {
+						for(let j=0;j<10; j++) {
+							if(p2Board.boardState(i,j) instanceof trap) {
+								$('.gridRight .cell[ row = ' + i.toString() + '][ col = ' + j.toString() + ']').css("background-color", "orange")
+							}
+						}
+					}
+				}
+				if(placedTraps[2]==trapCount) {
+					$('#endTurn').prop('disabled', false)
+				}
+			}
+		}
+		else if ((currentTurn == 1 && !hasShot) && LshipsPlaced && !traps[1]) {
+				shotRow = parseInt($(this).attr("row"));
+				shotCol = parseInt($(this).attr("col"));
+				outcome = p2Board.attemptedShot(shotRow, shotCol);
+				if(outcome == 'T') {
+					//fuck^2
+					let trapCenter = p2Board.boardState(shotRow, shotCol).getPos()
+					for(let i=0;i<trapSize*2+1;i++) {
+						for(let j=0;j<trapSize*2+1;j++) {
+							p2Board.clear(trapCenter[0]-trapSize+i,trapCenter[1]-trapSize+j)
+							console.log("clearing traps nine times")
+							outcome = p1Board.attemptedShot(trapCenter[0]-trapSize+i,trapCenter[1]-trapSize+j)
+							if(outcome == 'H'){
+								$('.gridLeft .cell[ row = ' + (trapCenter[0]-trapSize+i) + '][ col = ' + (trapCenter[1]-trapSize+j) + ']').css("background-color", "rgb(255, 0, 0)");
+								$('.gridLeft .cell[ row = ' + (trapCenter[0]-trapSize+i) + '][ col = ' + (trapCenter[1]-trapSize+j) + ']').text("\nH");
+								hasShot = true;
+								
+								if(p1Board.board[trapCenter[0]-trapSize+i][trapCenter[1]-trapSize+j] instanceof ship && p1Board.board[trapCenter[0]-trapSize+i][trapCenter[1]-trapSize+j].isSunk()){
+									$("#mode").text("Your opponents trap sunk your 1x" + p1Board.board[trapCenter[0]-trapSize+i][trapCenter[1]-trapSize+j].getSize() + " battleship!");
+								}
+								$('#endTurn').prop('disabled', false);
+								if(p1Board.allSunk()){
+									console.log("p2 wins!");
+									//P1 wins!
+									endGame("Player 2");
+								}
+							} 
+							else if (outcome == 'M'){
+								$('.gridLeft .cell[ row = ' + (trapCenter[0]-trapSize+i) + '][ col = ' + (trapCenter[1]-trapSize+j) + ']').css("background-color", "rgb(0, 0, 255)");
+								$('.gridLeft .cell[ row = ' + (trapCenter[0]-trapSize+i) + '][ col = ' + (trapCenter[1]-trapSize+j) + ']').text("\nM");
+								hasShot = true;
+								$('#endTurn').prop('disabled', false);
+							}
+						}
+					}
+					$("#mode").text("You've fallen into their trap!")
+					outcome = p2Board.attemptedShot(shotRow, shotCol)
+				}
+				if(outcome == 'H'){
+					$('.gridRight .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').css("background-color", "rgb(255, 0, 0)");
+					$('.gridRight .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').text("\nH");
+					hasShot = true;
+					
+					if(p2Board.board[shotRow][shotCol] instanceof ship && p2Board.board[shotRow][shotCol].isSunk()){
+						$("#mode").text("You sunk your opponents 1x" + p2Board.board[shotRow][shotCol].getSize() + " battleship!");
+					}
+					$('#endTurn').prop('disabled', false);
+					if(p2Board.allSunk()){
+						console.log("p1 wins!");
+						//P1 wins!
+						endGame("Player 1");
+					}
+				} 
+				else if (outcome == 'M'){
+					$('.gridRight .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').css("background-color", "rgb(0, 0, 255)");
+					$('.gridRight .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').text("\nM");
+					hasShot = true;
+					$('#endTurn').prop('disabled', false);
+				}
+			}
+		if(currentTurn == 2 && hasShot && RnumShips-1 == shipCount){
+			$('#endTurn').prop('disabled', false);
+		}
 	}); 
 	$("#startTurn").click(function(){
 		hideShips(currentTurn);
@@ -479,8 +641,12 @@ function startGame(shipCount){
 		$('#startTurn').prop('disabled', true);
 		$('#endTurn').prop('disabled', true);
 		
-		if (RshipsPlaced && LshipsPlaced)
+		if (RshipsPlaced && LshipsPlaced) {
 			$("#mode").text("Shoot"); // change game mode to shoot
+			if(traps[currentTurn]) {
+				$("#mode").text("Place Traps");
+			}
+		}
 	});
 	$("#endTurn").click(function(){
 		if(LnumShips-1 == shipCount){
@@ -495,6 +661,13 @@ function startGame(shipCount){
 			RchooseHead = false;
 			RchooseTail = false;
 		}
+		if(placedTraps[1]==trapCount) {
+			traps[1] = false;
+		}
+		if(placedTraps[2]==trapCount) {
+			traps[2] = false;
+		}
+
 			restoreShips(currentTurn);
 	});
 }

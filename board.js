@@ -34,6 +34,10 @@ class board{
 				return 'H';
 			}	
 		}
+		else if(this.board[row][col] instanceof trap){//if a boat is hit - valid shot 
+			console.log("trap hit")
+			return "T"
+		}
 		return 'I';//not a valid shot 
 	}
 	/**
@@ -145,6 +149,43 @@ class board{
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * used for fetching board states
+	 * 
+	 * @param {int} row row coordinate
+	 * @param {int} col column coordinate
+	 * @returns the value in that coordinate on the board
+	 */
+	boardState(row, col) {
+		return this.board[row][col]
+	}
+
+	/**
+	 * places a trap on the board
+	 * 
+	 * @param {object} trap trap object to place on board
+	 * @param {int} row row coordinate
+	 * @param {int} col column coordinate
+	 * @param {int} size trap size
+	 */
+	placeTrap(trap, row, col, size) {
+		for(let i=0;i<size*2+1;i++) {
+			for(let j=0;j<size*2+1;j++) {
+				this.board[row-size+i][col-size+j] = trap
+			}
+		}
+	}
+
+	/**
+	 * clear board space at given coordinate
+	 * 
+	 * @param {int} row row coordinate
+	 * @param {int} col column coordinate
+	 */
+	clear(row, col) {
+		this.board[row][col] = 0
 	}
 	
 }
