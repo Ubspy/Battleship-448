@@ -166,7 +166,9 @@ class AI {
         for (let i = 0; i < 9; i++) {
             for (let j = 0; j < 10; j++) {
                 if (boardObj.getSquare(i, j) == 'S') {
-                    return boardObj.attemptedShot(i, j);
+                    let fireRes = boardObj.attemptedShot(i, j);
+                    this.lastFiredOn = [i, j];
+                    return fireRes;
                 }
             }
         }
