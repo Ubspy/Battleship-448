@@ -62,14 +62,19 @@ class board{
 				if(this.board[row][col+i] instanceof ship && this.board[row][col+i].isSunk()){
 					$("#mode").text("You sunk your opponents 1x" + this.board[row][col+i].getSize() + " battleship!");
 				}
-				$('#endTurn').prop('disabled', false);
+				
 				if(this.allSunk()){
+					$('#endTurn').prop('disabled', true);
 					console.log(`p${boardNum} wins!`);
 					//P2 wins!
 					endGame(`Player ${boardNum}`);
-					$('#endTurn').prop('disabled', true);
 				}
-				
+				else
+				{
+					$('#endTurn').prop('disabled', false);
+					$('#torpedo').prop('disabled', true);
+					$('#multiShot').prop('disabled', true);
+				}
 				
 			} 
 			else if (outCome == 'M')
@@ -84,7 +89,13 @@ class board{
 					$('.gridLeft .cell[ row = ' + row + '][ col = ' + (col+i) + ']').css("background-color", "rgb(0, 0, 255)");
 					$('.gridLeft .cell[ row = ' + row + '][ col = ' + (col+i) + ']').text("\nM");
 				}
-				$('#endTurn').prop('disabled', false);
+				if(!this.allSunk())
+				{
+					$('#endTurn').prop('disabled', false);
+					$('#torpedo').prop('disabled', true);
+					$('#multiShot').prop('disabled', true);
+				}
+
 			}
 		}
 	}

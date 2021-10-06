@@ -377,7 +377,6 @@ function startGame(shipCount){
 		else if (currentTurn == 2 && !hasShot && RshipsPlaced && !traps[2]) {
 			shotRow = parseInt($(this).attr("row"));
 			shotCol = parseInt($(this).attr("col"));
-			currentPowerUp = 2;
 			if(currentPowerUp)
 				{
 					switch (currentPowerUp)
@@ -411,6 +410,8 @@ function startGame(shipCount){
 									$("#mode").text("Your opponents trap sunk your 1x" + p2Board.board[trapCenter[0]-trapSize+i][trapCenter[1]-trapSize+j].getSize() + " battleship!");
 								}
 								$('#endTurn').prop('disabled', false);
+								$('#torpedo').prop('disabled', true);
+								$('#multiShot').prop('disabled', true);
 								if(p2Board.allSunk()){
 									console.log("p1 wins!");
 									//P1 wins!
@@ -422,6 +423,8 @@ function startGame(shipCount){
 								$('.gridRight .cell[ row = ' + (trapCenter[0]-trapSize+i) + '][ col = ' + (trapCenter[1]-trapSize+j) + ']').text("\nM");
 								hasShot = true;
 								$('#endTurn').prop('disabled', false);
+								$('#torpedo').prop('disabled', true);
+								$('#multiShot').prop('disabled', true);
 							}
 						}
 					}
@@ -438,6 +441,8 @@ function startGame(shipCount){
 						$("#mode").text("You sunk your opponents 1x" + p1Board.board[shotRow][shotCol].getSize() + " battleship!");
 					}
 					$('#endTurn').prop('disabled', false);
+					$('#torpedo').prop('disabled', true);
+					$('#multiShot').prop('disabled', true);
 					if(p1Board.allSunk()){
 						console.log("p2 wins!");
 						//P2 wins!
@@ -449,12 +454,16 @@ function startGame(shipCount){
 					$('.gridLeft .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').text("\nM");
 					hasShot = true;
 					$('#endTurn').prop('disabled', false);
+					$('#torpedo').prop('disabled', true);
+					$('#multiShot').prop('disabled', true);
 				}
 				hasShot = true;
 			}
 		}
 		if(currentTurn == 1 && hasShot && LnumShips-1 == shipCount){
 			$('#endTurn').prop('disabled', false);
+			$('#torpedo').prop('disabled', true);
+			$('#multiShot').prop('disabled', true);
 		}
 	});
 	 $(".gridRight .cell").click(function(){
@@ -597,7 +606,6 @@ function startGame(shipCount){
 		else if ((currentTurn == 1 && !hasShot) && LshipsPlaced && !traps[1]) {
 				shotRow = parseInt($(this).attr("row"));
 				shotCol = parseInt($(this).attr("col"));
-				currentPowerUp = 2;
 				if(currentPowerUp)
 				{
 					switch (currentPowerUp)
@@ -631,6 +639,8 @@ function startGame(shipCount){
 										$("#mode").text("Your opponents trap sunk your 1x" + p1Board.board[trapCenter[0]-trapSize+i][trapCenter[1]-trapSize+j].getSize() + " battleship!");
 									}
 									$('#endTurn').prop('disabled', false);
+									$('#torpedo').prop('disabled', true);
+									$('#multiShot').prop('disabled', true);
 									if(p1Board.allSunk()){
 										console.log("p2 wins!");
 										//P1 wins!
@@ -642,6 +652,8 @@ function startGame(shipCount){
 									$('.gridLeft .cell[ row = ' + (trapCenter[0]-trapSize+i) + '][ col = ' + (trapCenter[1]-trapSize+j) + ']').text("\nM");
 									hasShot = true;
 									$('#endTurn').prop('disabled', false);
+									$('#torpedo').prop('disabled', true);
+									$('#multiShot').prop('disabled', true);
 								}
 							}
 						}
@@ -657,6 +669,8 @@ function startGame(shipCount){
 							$("#mode").text("You sunk your opponents 1x" + p2Board.board[shotRow][shotCol].getSize() + " battleship!");
 						}
 						$('#endTurn').prop('disabled', false);
+						$('#torpedo').prop('disabled', true);
+						$('#multiShot').prop('disabled', true);
 						if(p2Board.allSunk()){
 							console.log("p1 wins!");
 							//P1 wins!
@@ -668,12 +682,16 @@ function startGame(shipCount){
 						$('.gridRight .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').text("\nM");
 						hasShot = true;
 						$('#endTurn').prop('disabled', false);
+						$('#torpedo').prop('disabled', true);
+						$('#multiShot').prop('disabled', true);
 					}
 				}
 				hasShot = true;
 			}
 		if(currentTurn == 2 && hasShot && RnumShips-1 == shipCount){
 			$('#endTurn').prop('disabled', false);
+			$('#torpedo').prop('disabled', true);
+			$('#multiShot').prop('disabled', true);
 		}
 	}); 
 	$("#startTurn").click(function(){
