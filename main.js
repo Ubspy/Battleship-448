@@ -44,10 +44,6 @@ function updateBoardColors(outcome, shotRow, shotCol) {
         $('.gridLeft .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').text("\nH");
         hasShot = true;
         
-        console.log(p1Board);
-        console.log(shotRow, shotCol);
-        console.log(p1Board.board[shotRow][shotCol]);
-
         if(p1Board.board[shotRow][shotCol] instanceof ship && p1Board.board[shotRow][shotCol].isSunk()){
             $("#mode").text("You sunk your opponents 1x" + p1Board.board[shotRow][shotCol].getSize() + " battleship!");
         }

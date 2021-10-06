@@ -29,6 +29,12 @@ class AI {
         // We need a variable to keep track of backtracking for the medium AI
         this.backTrackLevel = 0;
         this.backTracked = true;
+
+        // This will keep track of what squares we have hit
+        this.hits = [];
+
+        // This will keep track of ships that have been hit but not sunk after sinking a ship
+        this.extraHits = [];
     }
 
     isActive()
@@ -79,11 +85,30 @@ class AI {
                 // In this case, if the ship is sunk, then we want to reset everything we have so the AI can keep looking for new ships to fire 
                 this.lastFound = [];
                 this.lastDir = [];
+                this.triedAdjacent = [];
+
+                // Now that we've sunk the ship, we want to see if we've hit any squares that aren't a part of sinked ships
+                // We don't need to check for instanceof ship here since we can only hit ships
+                this.extraHits = this.hits.filter(coord =>
+                    !boardObj.board[coord[0]][coord[1]].isSunk());
+
+                // At the end we want to reset the back track level
+                this.backTrackLevel = 0;
             }
         }        
 
         // Define fire result variable to return
         let fireRes = "";
+
+        // At this point, we want to see if we have extra ships we need to sink
+        // We also want to do this if we've tried every direction and still haven't sunk a ship
+        if((this.lastFound.length == 0 && this.extraHits.length > 0) || this.triedAdjacent.length == 4) {
+            // If we do, then we want to update the lastFound variable
+            this.lastFound = this.extraHits[0];
+
+            // Then we remove the first element from the extraHits var
+            this.extraHits.shift();
+        }
 
         // From here there are three cases, the first case is that we don't currently have a ship that we're firing at
         if(this.lastFound.length == 0) {
@@ -94,6 +119,11 @@ class AI {
             if(fireRes == 'H') {
                 // If we did hit something, we set the lastFound member var to this position
                 this.lastFound = this.lastFiredOn;
+            }
+            else if(fireRes == 'I')
+            {
+                // If we encounter an invalid shot we gotta go shoot again
+                return this.#mediumFire(boardObj);
             }
         }
         // The next case is that we have a found ship, but we don't know what direction it's in
@@ -122,7 +152,14 @@ class AI {
                 else {
                     // If this happens, we want to continue to fire randomly from the original ship position we found
                     // There's some direction we missed that we need to find
-                    return this.#fireRandomlyAdjacent(boardObj);
+                    fireRes = this.#fireRandomlyAdjacent(boardObj);
+
+                    // TODO: Clean this up. repeated code
+                    if(fireRes == 'H') {
+                        this.hits.push(this.lastFiredOn);
+                    }
+
+                    return fireRes;
                 }
             }
 
@@ -132,6 +169,7 @@ class AI {
             // If any of the coordinates for the new location are negative, we abandon ship (pun intended), and back track 
             if(!newLoc.every(coord => coord >= 0))
             {
+                // Set back track level and tell the AI we need to backtrack 
                 this.backTrackLevel++;
                 this.backTracked = false;
 
@@ -158,6 +196,11 @@ class AI {
 
             // Update board location
             this.lastFiredOn = newLoc;
+        }
+
+        // For later, we want to store the locations we hit, so if it's hit we want to store it
+        if(fireRes == 'H') {
+            this.hits.push(this.lastFiredOn);
         }
 
         // Finally at the end, we want to return the fire result of the spot we tried to fire on
@@ -193,7 +236,7 @@ class AI {
         // Make random row and col, the board is 9 tall and 10 wide
         let randRow = Math.floor(Math.random() * 9);
         let randCol = Math.floor(Math.random() * 10);
-
+ 
         this.lastFiredOn = [randRow, randCol];
 
         return boardObj.attemptedShot(randRow, randCol);
@@ -246,6 +289,9 @@ class AI {
             this.triedAdjacent = [];
         }
         else if(fireRes == 'I') {
+            // Add this to tried adjacent var
+            this.triedAdjacent.push(newLoc);
+
             // If we're already fired there then we try again
             return this.#fireRandomlyAdjacent(boardObj);
         }
