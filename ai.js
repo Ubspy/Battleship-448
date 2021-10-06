@@ -14,27 +14,11 @@ class AI {
      * @param aiMode String A string containing the mode of the AI
     **/
     constructor(aiMode) {
-        /* 
-        if(aiMode == "none") {
-            this.mode = 0;
-        }
-        if(aiMode == "easy") {
-            this.mode = 1;
-        }
-        else if(aiMode == "medium") {
-            this.mode = 2;
-        }
-        else if(aiMode == "hard") {
-            this.mode = 3;
-        } */
-
-        this.mode = aiMode;
+       this.mode = aiMode;
 
         // Initlalize last found and direction vars
         this.lastFound = [];
         this.lastDir = [];
-
-        // Keeps track of if a ship was sunk last turn
 
         // We also want a variable for the last ship we fired on
         this.lastFiredOn = [];
@@ -86,10 +70,6 @@ class AI {
      * @returns What the shot resulted in. 'H' if hit, 'M' if miss.
     **/
     #mediumFire(boardObj) {
-        // TODO: Update docs
-        // TODO: Account for possibly random firing onto an 'I' square
-        // First thing we want to do here is make sure we don't have a ship we're currently trying to sink
-
         // The very first thing we want to check if the ship we were firing at has sunk
         // To do this, we want to make sure that first we have a shot to check
         if(this.lastFiredOn.length > 0)
