@@ -100,6 +100,65 @@ class board{
 		}
 	}
 
+	attemptTorpedoShot(rowClicked, col, boardNum) {
+		console.log("CLICKED SQUARE:", rowClicked, col);
+		let gridID = boardNum == 1 ? ".gridLeft" : ".gridRight";
+		let playerAttacking = boardNum == 1 ? 2 : 1;
+
+		if (this.board[rowClicked][col] == 1)
+			return;
+
+		$('#endTurn').prop('disabled', false);
+
+		for (let row = 8; row >= 0; row--) {
+			if (this.board[row][col] == 0) { // Found an empty space... keep on going
+				$(`${gridID} .cell[ row = ` + row + '][ col = ' + col + ']').css("background-color", "rgb(0, 0, 255)");
+				$(`${gridID} .cell[ row = ` + row + '][ col = ' + col + ']').text("\nM");
+				this.board[row][col] = 1;
+				console.log("miss", row, col);
+
+				continue;
+			} else if (this.board[row][col] == 1 && this.board[row][col] instanceof ship) { // Hits ship that has been hit already.
+				$(`${gridID} .cell[ row = `+ row + '][ col = ' + col + ']').css("background-color", "rgb(0, 0, 255)");
+				$(`${gridID} .cell[ row = ` + row + '][ col = ' + col + ']').text("\nM");
+				console.log("hit existing ship", row, col);
+
+				break;
+			} else if (this.board[row][col] instanceof ship) { // Found a new ship!
+				let boat = this.board[row][col];
+				let [rowHead, colHead] = boat.getHead();
+				let distance = Math.abs((rowHead-row)+(col-colHead));
+
+				if (boat.hits[distance] != 1){
+					boat.registerHit(distance);
+					// handle hit logic
+					$(`${gridID} .cell[ row = ` + row + '][ col = ' + col + ']').css("background-color", "rgb(255, 0, 0)");
+					$(`${gridID} .cell[ row = ` + row + '][ col = ' + col + ']').text("\nH");
+					
+					if(this.board[row][col] instanceof ship && this.board[row][col].isSunk()){
+						$("#mode").text("You sunk your opponents 1x" + this.board[row][col].getSize() + " battleship!");
+					}
+
+					if(this.allSunk()) {
+						console.log(`p${playerAttacking} wins!`);
+						$('#endTurn').prop('disabled', true);
+						endGame(`Player ${playerAttacking}`);
+					}
+				}
+
+				console.log("found a ship!", row, col);
+				break;
+			} else if (this.board[row][col] instanceof trap) { // hit a trap square
+				console.log("HIT A TRAP", row, col);
+				//TODO: handle hitting a trap square. :)
+			}
+		}
+
+		$('#torpedo').prop('disabled', true);
+		$('#multiShot').prop('disabled', true);
+		hasShot = true;
+	}
+
 	/**
 	*The placeShip function is provided a ship, and an index in the array for the tail position
 	*The function then uses the newShip's head location to iterate through the board and add

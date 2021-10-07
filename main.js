@@ -381,10 +381,9 @@ function startGame(shipCount){
 				{
 					switch (currentPowerUp)
 					{
-						case 0:
-							break;
 						case 1:
-							p1Board.attemptTorpedo(shotRow, shotCol);
+							p1Board.attemptTorpedoShot(shotRow, shotCol, 1);
+							break;
 						case 2:
 							p1Board.multiShot(shotRow, shotCol, 1);
 
@@ -460,8 +459,8 @@ function startGame(shipCount){
 					$('#torpedo').prop('disabled', true);
 					$('#multiShot').prop('disabled', true);
 				}
-				hasShot = true;
 			}
+			hasShot = true;
 		}
 		if(currentTurn == 1 && hasShot && LnumShips-1 == shipCount){
 			$('#endTurn').prop('disabled', false);
@@ -613,10 +612,9 @@ function startGame(shipCount){
 				{
 					switch (currentPowerUp)
 					{
-						case 0:
-							break;
 						case 1:
-							p2Board.attemptTorpedo(shotRow, shotCol);
+							p2Board.attemptTorpedoShot(shotRow, shotCol, 2);
+							break;
 						case 2:
 							p2Board.multiShot(shotRow, shotCol, 2);
 
