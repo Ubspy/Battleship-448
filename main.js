@@ -385,7 +385,7 @@ function startGame(shipCount){
 							p1Board.attemptTorpedoShot(shotRow, shotCol, 1);
 							break;
 						case 2:
-							p1Board.multiShot(shotRow, shotCol, 1);
+							p1Board.multiShot(shotRow, shotCol, 0);
 
 					}
 				}
@@ -616,7 +616,7 @@ function startGame(shipCount){
 							p2Board.attemptTorpedoShot(shotRow, shotCol, 2);
 							break;
 						case 2:
-							p2Board.multiShot(shotRow, shotCol, 2);
+							p2Board.multiShot(shotRow, shotCol, 1);
 
 					}
 				}

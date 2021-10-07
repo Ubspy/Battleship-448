@@ -46,6 +46,10 @@ class board{
 		for(var i=0; i<=8; i+=2)
 		{
 			outCome = this.attemptedShot(row, col+i);
+			if(outCome == 'T')
+			{
+				console.log("Hit a trap");
+			}
 			if(outCome == 'H')
 			{
 				if(currentTurn == 1)
@@ -65,9 +69,9 @@ class board{
 				
 				if(this.allSunk()){
 					$('#endTurn').prop('disabled', true);
-					console.log(`p${boardNum} wins!`);
+					console.log(`p${!boardNum+1} wins!`);
 					//P2 wins!
-					endGame(`Player ${boardNum}`);
+					endGame(`Player ${!boardNum+1}`);
 				}
 				else
 				{
