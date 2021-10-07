@@ -15,21 +15,26 @@ let ai;
 *@return none 
 */ 
 function switchTurn(){
-    if(ai.isActive()) { 
+    if(ai.isActive() && RshipsPlaced) { 
         // Take AI shot and update board colors
         let aiShot = ai.fire(p1Board);
         updateBoardColors(aiShot, ai.getLastFire()[0], ai.getLastFire()[1]);
     
         hasShot = false;
-
         currentTurn = 1;
         $("#turn").text("Current Turn: Player 1");
-    }
-    else if(currentTurn == 1){
+    } else if(ai.isActive() && !RshipsPlaced) {
+        // If this is the case, AI needs to place ships and then we set RshipsPlaced to true
+        ai.placeShips(p2Board);
+        RshipsPlaced = true;
+
+        hasShot = false;
+        currentTurn = 1;
+    } else if(currentTurn == 1){
 		hasShot = false;
 		currentTurn = 2;
 		$("#turn").text("Current Turn: Player 2");
-	}else{
+	} else{
 		hasShot = false;
 		currentTurn = 1;
 		$("#turn").text("Current Turn: Player 1");
@@ -163,7 +168,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Initialize AI object and place it's ships
     ai = new AI(aiChoice);
-    ai.placeShips(p2Board, shipCount);
 
 	startGame(shipCount);
 });
@@ -547,11 +551,11 @@ function startGame(shipCount){
 			LshipsPlaced = true;
 		}
         // If the AI is active then there's the right amount of ships placed
-		if(ai.isActive() || RnumShips-1 == shipCount){
+		if(RnumShips-1 == shipCount){
 			$('#startTurn').prop('disabled', false);
-			RshipsPlaced = true;
 			RchooseHead = false;
 			RchooseTail = false;
+            RshipsPlaced = true;
 		}
 
 		restoreShips(currentTurn);
