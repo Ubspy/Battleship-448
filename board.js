@@ -34,6 +34,10 @@ class board{
 				return 'H';
 			}	
 		}
+		else if(this.board[row][col] instanceof trap){//if a boat is hit - valid shot 
+			console.log("trap hit")
+			return "T"
+		}
 		return 'I';//not a valid shot 
 	}
 
@@ -61,6 +65,136 @@ class board{
 		else if (this.board[row][col] == 1) {
 			return 'M';
 		}
+	}
+
+	// TODO: Document this
+	multiShot(row, col, boardNum){
+		var outCome; 
+		for(var i=0; i<=8; i+=2)
+		{
+			outCome = this.attemptedShot(row, col+i);
+			if(outCome == 'T')
+			{
+				console.log("Hit a trap");
+			}
+			if(outCome == 'H')
+			{
+				if(currentTurn == 1)
+				{
+					$('.gridRight .cell[ row = ' + row + '][ col = ' + (col+i) + ']').css("background-color", "rgb(255, 0, 0)");
+					$('.gridRight .cell[ row = ' + row + '][ col = ' + (col+i) + ']').text("\nH");
+				}
+				else if(currentTurn == 2)
+				{
+					$('.gridLeft .cell[ row = ' + row + '][ col = ' + (col+i) + ']').css("background-color", "rgb(255, 0, 0)");
+					$('.gridLeft .cell[ row = ' + row + '][ col = ' + (col+i) + ']').text("\nH");
+				}
+
+				if(this.board[row][col+i] instanceof ship && this.board[row][col+i].isSunk()){
+					$("#mode").text("You sunk your opponents 1x" + this.board[row][col+i].getSize() + " battleship!");
+				}
+				
+				if(this.allSunk()){
+					$('#endTurn').prop('disabled', true);
+					console.log(`p${!boardNum+1} wins!`);
+					//P2 wins!
+					endGame(`Player ${!boardNum+1}`);
+				}
+				else
+				{
+					$('#endTurn').prop('disabled', false);
+					$('#torpedo').prop('disabled', true);
+					$('#multiShot').prop('disabled', true);
+				}
+				
+			} 
+			else if (outCome == 'M')
+			{
+				if(currentTurn == 1)
+				{
+					$('.gridRight .cell[ row = ' + row + '][ col = ' + (col+i) + ']').css("background-color", "rgb(0, 0, 255)");
+					$('.gridRight .cell[ row = ' + row + '][ col = ' + (col+i) + ']').text("\nM");
+				}
+				else if(currentTurn == 2)
+				{
+					$('.gridLeft .cell[ row = ' + row + '][ col = ' + (col+i) + ']').css("background-color", "rgb(0, 0, 255)");
+					$('.gridLeft .cell[ row = ' + row + '][ col = ' + (col+i) + ']').text("\nM");
+				}
+				if(!this.allSunk())
+				{
+					$('#endTurn').prop('disabled', false);
+					$('#torpedo').prop('disabled', true);
+					$('#multiShot').prop('disabled', true);
+				}
+
+			}
+		}
+	}
+
+	/**
+	*The attemptTorpedoShot function is provided a location to fire on, as well as what board is being
+	*fired on. The function starts from the bottom of the board at the selected column and then shoots
+	*each row upwards until it finds a ship or until it reaches the top of the board.
+	*@param rowClicked An integer representing the row that was clicked on the board
+	*@param col        An integer representing the column that was clicked on the board
+	*@param boardNum An integer representing what board is being fired on.
+	*@return None
+	*/
+	attemptTorpedoShot(rowClicked, col, boardNum) {
+		console.log("CLICKED SQUARE:", rowClicked, col);
+		let gridID = boardNum == 1 ? ".gridLeft" : ".gridRight";
+		let playerAttacking = boardNum == 1 ? 2 : 1;
+
+		if (this.board[rowClicked][col] == 1)
+			return;
+
+		$('#endTurn').prop('disabled', false);
+
+		for (let row = 8; row >= 0; row--) {
+			if (this.board[row][col] == 0) { // Found an empty space... keep on going
+				$(`${gridID} .cell[ row = ` + row + '][ col = ' + col + ']').css("background-color", "rgb(0, 0, 255)");
+				$(`${gridID} .cell[ row = ` + row + '][ col = ' + col + ']').text("\nM");
+				this.board[row][col] = 1;
+				console.log("miss", row, col);
+
+				continue;
+			} else if (this.board[row][col] == 1 && this.board[row][col] instanceof ship) { // Hits ship that has been hit already.
+				console.log("hit existing ship - exit early", row, col);
+
+				break;
+			} else if (this.board[row][col] instanceof ship) { // Found a new ship!
+				let boat = this.board[row][col];
+				let [rowHead, colHead] = boat.getHead();
+				let distance = Math.abs((rowHead - row) + (col - colHead));
+
+				if (boat.hits[distance] != 1) {
+					boat.registerHit(distance);
+					// Handle the hit logic
+					$(`${gridID} .cell[ row = ` + row + '][ col = ' + col + ']').css("background-color", "rgb(255, 0, 0)");
+					$(`${gridID} .cell[ row = ` + row + '][ col = ' + col + ']').text("\nH");
+
+					if (this.board[row][col] instanceof ship && this.board[row][col].isSunk()) {
+						$("#mode").text("You sunk your opponents 1x" + this.board[row][col].getSize() + " battleship!");
+					}
+
+					if (this.allSunk()) {
+						console.log(`p${playerAttacking} wins!`);
+						$('#endTurn').prop('disabled', true);
+						endGame(`Player ${playerAttacking}`);
+					}
+				}
+
+				console.log("found a ship!", row, col);
+				break;
+			} else if (this.board[row][col] instanceof trap) { // Hit a trap square
+				console.log("HIT A TRAP", row, col);
+				//TODO: handle hitting a trap square. :)
+			}
+		}
+
+		$('#torpedo').prop('disabled', true);
+		$('#multiShot').prop('disabled', true);
+		hasShot = true;
 	}
 
 	/**
@@ -172,6 +306,43 @@ class board{
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * used for fetching board states
+	 * 
+	 * @param {int} row row coordinate
+	 * @param {int} col column coordinate
+	 * @returns the value in that coordinate on the board
+	 */
+	boardState(row, col) {
+		return this.board[row][col]
+	}
+
+	/**
+	 * places a trap on the board
+	 * 
+	 * @param {object} trap trap object to place on board
+	 * @param {int} row row coordinate
+	 * @param {int} col column coordinate
+	 * @param {int} size trap size
+	 */
+	placeTrap(trap, row, col, size) {
+		for(let i=0;i<size*2+1;i++) {
+			for(let j=0;j<size*2+1;j++) {
+				this.board[row-size+i][col-size+j] = trap
+			}
+		}
+	}
+
+	/**
+	 * clear board space at given coordinate
+	 * 
+	 * @param {int} row row coordinate
+	 * @param {int} col column coordinate
+	 */
+	clear(row, col) {
+		this.board[row][col] = 0
 	}
 	
 }
