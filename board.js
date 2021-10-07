@@ -100,6 +100,15 @@ class board{
 		}
 	}
 
+	/**
+	*The attemptTorpedoShot function is provided a location to fire on, as well as what board is being
+	*fired on. The function starts from the bottom of the board at the selected column and then shoots
+	*each row upwards until it finds a ship or until it reaches the top of the board.
+	*@param rowClicked An integer representing the row that was clicked on the board
+	*@param col        An integer representing the column that was clicked on the board
+	*@param boardNum An integer representing what board is being fired on.
+	*@return None
+	*/
 	attemptTorpedoShot(rowClicked, col, boardNum) {
 		console.log("CLICKED SQUARE:", rowClicked, col);
 		let gridID = boardNum == 1 ? ".gridLeft" : ".gridRight";
@@ -119,27 +128,25 @@ class board{
 
 				continue;
 			} else if (this.board[row][col] == 1 && this.board[row][col] instanceof ship) { // Hits ship that has been hit already.
-				$(`${gridID} .cell[ row = `+ row + '][ col = ' + col + ']').css("background-color", "rgb(0, 0, 255)");
-				$(`${gridID} .cell[ row = ` + row + '][ col = ' + col + ']').text("\nM");
-				console.log("hit existing ship", row, col);
+				console.log("hit existing ship - exit early", row, col);
 
 				break;
 			} else if (this.board[row][col] instanceof ship) { // Found a new ship!
 				let boat = this.board[row][col];
 				let [rowHead, colHead] = boat.getHead();
-				let distance = Math.abs((rowHead-row)+(col-colHead));
+				let distance = Math.abs((rowHead - row) + (col - colHead));
 
-				if (boat.hits[distance] != 1){
+				if (boat.hits[distance] != 1) {
 					boat.registerHit(distance);
-					// handle hit logic
+					// Handle the hit logic
 					$(`${gridID} .cell[ row = ` + row + '][ col = ' + col + ']').css("background-color", "rgb(255, 0, 0)");
 					$(`${gridID} .cell[ row = ` + row + '][ col = ' + col + ']').text("\nH");
-					
-					if(this.board[row][col] instanceof ship && this.board[row][col].isSunk()){
+
+					if (this.board[row][col] instanceof ship && this.board[row][col].isSunk()) {
 						$("#mode").text("You sunk your opponents 1x" + this.board[row][col].getSize() + " battleship!");
 					}
 
-					if(this.allSunk()) {
+					if (this.allSunk()) {
 						console.log(`p${playerAttacking} wins!`);
 						$('#endTurn').prop('disabled', true);
 						endGame(`Player ${playerAttacking}`);
@@ -148,7 +155,7 @@ class board{
 
 				console.log("found a ship!", row, col);
 				break;
-			} else if (this.board[row][col] instanceof trap) { // hit a trap square
+			} else if (this.board[row][col] instanceof trap) { // Hit a trap square
 				console.log("HIT A TRAP", row, col);
 				//TODO: handle hitting a trap square. :)
 			}
