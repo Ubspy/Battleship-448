@@ -12,7 +12,7 @@ let currentPowerUp = 0;
 
 // When in Rome...
 let traps = [false, true, true]
-let trapCount = 2
+let trapCount = 1
 let trapSize = 1
 
 /** 
@@ -418,6 +418,9 @@ function startGame(shipCount){
 									endGame("Player 1");
 								}
 							} 
+							else if (outcome == 'T') {
+								// assign me a different job i aint doing this shit
+							}
 							else if (outcome == 'M'){
 								$('.gridRight .cell[ row = ' + (trapCenter[0]-trapSize+i) + '][ col = ' + (trapCenter[1]-trapSize+j) + ']').css("background-color", "rgb(0, 0, 255)");
 								$('.gridRight .cell[ row = ' + (trapCenter[0]-trapSize+i) + '][ col = ' + (trapCenter[1]-trapSize+j) + ']').text("\nM");
