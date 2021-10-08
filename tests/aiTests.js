@@ -13,13 +13,15 @@ function testEasyAI() {
 // on the ship, and we add one because there's a chance that you hit the middle of the ship, so the AI will go until it misses, the go the opposite
 // direction from the original hit point
 function testMediumAI() {
-    let aiBoard = new board();
+    let aiBoard = new board(6);
     
     // TODO: This needs to be implemented
     let mediumAI = new AI("medium");
 
     // TODO: This needs to be implemented
     let ships = mediumAI.placeShips(aiBoard, 6);
+
+    console.log(aiBoard);
 
     let currentHit = null;
 
@@ -32,7 +34,8 @@ function testMediumAI() {
 
     // TODO: This needs to be implemented
     let lastFiredSpot = mediumAI.getLastFire();
-    let firedShip = aiBoard[lastFiredSpot[0]][lastFiredSpot[1]];
+
+    let firedShip = aiBoard.board[lastFiredSpot[0]][lastFiredSpot[1]];
 
     // At this point, we want to make sure this ship size is larger than two, so we'll check for that
     if(firedShip.getSize() <= 2)
@@ -50,6 +53,7 @@ function testMediumAI() {
         // If we hit, break from the loop
         if(currentHit == 'H')
         {
+            console.log(`Adjacent hit`);
             break;
         }
     }
@@ -57,19 +61,24 @@ function testMediumAI() {
     // If we get through the for loop and we did not hit anything, the test failed
     if(currentHit == 'M')
     {
+        console.log('No adjacent hit');
         return false;
-    }
+    } 
+
+    console.log(firedShip.getSize());
 
     // If it makes it all the way then our AI did it right, and we should be able to then keep going for the size of the ship to sink it
     // We will fire two less than the ship size since we already fired on two of the squared
     // We fire once more though incase it reached the end of the ship and needs to go back
     for(var i = 0; i < firedShip.getSize() - 1; i++)
     {
+        console.log(i);
         // TODO: This needs to be implemented
         mediumAI.fire(aiBoard);
     }
 
     // At this point the ship should be sunk, if it's not then the AI doesn't work properly
+    console.log('Sunk ship')
     return firedShip.isSunk(); 
 }
 
@@ -81,7 +90,7 @@ function easyFullTest() {
     // Make a new board for the player and the AI 
     aiBoard = new board();
 
-    // // TODO: This function needs to be added
+    // TODO: This function needs to be added
     // Makes a new AI object
     easyAI = new AI("easy");
 
@@ -125,8 +134,8 @@ function easyRandomTest() {
     // TODO: This needs to be implemented
     let easyAI = new AI("easy");
     
-    let aiOneBoard = new board();
-    let aiTwoBoard = new board();
+    let aiOneBoard = new board(6);
+    let aiTwoBoard = new board(6);
 
     for(let i = 0; i < 30; i++) {
         // TODO: This needs to be implemented
@@ -146,6 +155,7 @@ function validPlacementTest(aiObject) {
     for (var i = 0; i < 10; i++) {
         let board = new board();
         aiObject.placeShips(board, 6);
+
         let shipSquares = board.board.reduce((prevSum, currArr) => prevSum + currArr.reduce((prevSum2, currSquare) => {
             if (currSquare instanceof ship) {
                 return prevSum2 + 1;
@@ -167,12 +177,13 @@ function randomPlacementTest(difficulty) {
 
     let aiOne = new AI(difficulty);
     let aiTwo = new AI(difficulty);
-    let boardOne = new board();
-    let boardTwo = new board();
+
+    let boardOne = new board(6);
+    let boardTwo = new board(6);
 
     aiOne.placeShips(boardOne, 6);
     aiTwo.placeShips(boardTwo, 6);
-
+    
     return randomBoardTest(boardOne, boardTwo); // not sure what arithmetic to do from here but this is a start.
 }
 
@@ -180,12 +191,13 @@ function testHardAI() {
     // Creates a hard AI object and a board. Places 6 ships on the board.
     // Has the AI fire 6+5+4+3+2+1 = 21 times. Since it cheats, it should have hit every time and not missed a single shot.
     let ai = new AI("hard");
-    let board = new board();
-    ai.placeShips(board, 6);
+
+    let brd = new board();
+    ai.placeShips(brd, 6);
     for (let i = 0; i < 21; i++) {
-        ai.fire();
+        ai.fire(brd);
     }
-    return board.allSunk();
+    return brd.allSunk();
 }
 
 // Helper function to determine how different two distinct boards are

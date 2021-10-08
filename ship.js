@@ -64,6 +64,7 @@ class ship{
 		}
 		return 1;//returns 1 if the ship has been sunk 
 	}
+
 	/**
 	* Registers the hit on the appropriate location on the ship - converts the appropriate
 	* location on teh hits array to a 1 

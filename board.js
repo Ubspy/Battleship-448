@@ -41,6 +41,33 @@ class board{
 		return 'I';//not a valid shot 
 	}
 
+	/**
+	 * Gets the type of square indexed by (row, col). Returns 'H' for hit, 'M' for miss, 'S' for ship, and 'W' for just water.
+	 * @param {*} row The index of the row to check (0-8)
+	 * @param {*} col The index of the column to check (0-9)
+	 * @returns 'H' if the square is hit, 'M' if it's a missed shot, 'S' for a ship that hasn't been hit, and 'W' for just water.
+	 */
+	getSquare(row, col) {
+		if (this.board[row][col] instanceof ship) {
+			let boat = this.board[row][col];
+			let [rowHead, colHead] = boat.getHead();
+			let distance = Math.abs((rowHead-row)+(col-colHead));
+			if(boat.hits[distance] == 1){
+				return 'H';
+			}
+			else {
+				return 'S';
+			}
+		}
+		else if (this.board[row][col] == 0) {
+			return 'W';
+		}
+		else if (this.board[row][col] == 1) {
+			return 'M';
+		}
+	}
+
+	// TODO: Document this
 	multiShot(row, col, boardNum){
 		var outCome; 
 		for(var i=0; i<=8; i+=2)
