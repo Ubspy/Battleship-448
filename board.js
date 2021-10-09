@@ -209,8 +209,8 @@ class board{
 							$('#torpedo').prop('disabled', true);
 							$('#multiShot').prop('disabled', true);
 							if (boardThatAttacted.allSunk()) {
-								console.log(`p${playerAttacking} wins!`);
-								endGame(`Player ${playerAttacking}`);
+								console.log(`p${boardNum} wins!`);
+								endGame(`Player ${boardNum}`);
 							}
 						}
 						else if (outcome == 'M') {
