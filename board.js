@@ -151,7 +151,7 @@ class board{
 		$('#endTurn').prop('disabled', false);
 
 		for (let row = 8; row >= 0; row--) {
-			if (this.board[row][col] == 0 || this.board[row][col] instanceof trap) { // Found an empty space (or trap)... keep on going
+			if (this.board[row][col] == 0) { // Found an empty space (or trap)... keep on going
 				$(`${gridID} .cell[ row = ` + row + '][ col = ' + col + ']').css("background-color", "rgb(0, 0, 255)");
 				$(`${gridID} .cell[ row = ` + row + '][ col = ' + col + ']').text("\nM");
 				this.board[row][col] = 1;
@@ -185,6 +185,51 @@ class board{
 				}
 
 				console.log("found a ship!", row, col);
+				break;
+			} else if (this.board[row][col] instanceof trap) { // Hit a trap square
+				let boardBeingAttacted = eval('p' + boardNum + 'Board');
+				let boardThatAttacted = eval('p' + playerAttacking + 'Board');
+				let gridIDThatAttacted = gridID == ".gridRight" ? ".gridLeft" : ".gridRight";
+
+				let trapCenter = boardBeingAttacted.boardState(row, col).getPos();
+				for (let i = 0; i < trapSize * 2 + 1; i++) {
+					for (let j = 0; j < trapSize * 2 + 1; j++) {
+						boardBeingAttacted.clear(trapCenter[0] - trapSize + i, trapCenter[1] - trapSize + j)
+						console.log("clearing traps nine times")
+						outcome = boardThatAttacted.attemptedShot(trapCenter[0] - trapSize + i, trapCenter[1] - trapSize + j)
+						if (outcome == 'H') {
+							$(`${gridIDThatAttacted} .cell[ row = ` + (trapCenter[0] - trapSize + i) + '][ col = ' + (trapCenter[1] - trapSize + j) + ']').css("background-color", "rgb(255, 0, 0)");
+							$(`${gridIDThatAttacted} .cell[ row = ` + (trapCenter[0] - trapSize + i) + '][ col = ' + (trapCenter[1] - trapSize + j) + ']').text("\nH");
+							hasShot = true;
+
+							if (boardThatAttacted.board[trapCenter[0] - trapSize + i][trapCenter[1] - trapSize + j] instanceof ship && boardThatAttacted.board[trapCenter[0] - trapSize + i][trapCenter[1] - trapSize + j].isSunk()) {
+								$("#mode").text("Your opponents trap sunk your 1x" + boardThatAttacted.board[trapCenter[0] - trapSize + i][trapCenter[1] - trapSize + j].getSize() + " battleship!");
+							}
+							$('#endTurn').prop('disabled', false);
+							$('#torpedo').prop('disabled', true);
+							$('#multiShot').prop('disabled', true);
+							if (boardThatAttacted.allSunk()) {
+								console.log(`p${playerAttacking} wins!`);
+								endGame(`Player ${playerAttacking}`);
+							}
+						}
+						else if (outcome == 'M') {
+							$(`${gridIDThatAttacted} .cell[ row = ` + (trapCenter[0] - trapSize + i) + '][ col = ' + (trapCenter[1] - trapSize + j) + ']').css("background-color", "rgb(0, 0, 255)");
+							$(`${gridIDThatAttacted} .cell[ row = ` + (trapCenter[0] - trapSize + i) + '][ col = ' + (trapCenter[1] - trapSize + j) + ']').text("\nM");
+							hasShot = true;
+							$('#endTurn').prop('disabled', false);
+							$('#torpedo').prop('disabled', true);
+							$('#multiShot').prop('disabled', true);
+						}
+					}
+				}
+				$("#mode").text("You've fallen into their trap!")
+
+				//count hitting the trapsquare as a miss.
+				$(`${gridID} .cell[ row = ` + row + '][ col = ' + col + ']').css("background-color", "rgb(0, 0, 255)");
+				$(`${gridID} .cell[ row = ` + row + '][ col = ' + col + ']').text("\nM");
+				this.board[row][col] = 1;
+
 				break;
 			}
 		}
