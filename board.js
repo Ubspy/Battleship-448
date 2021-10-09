@@ -69,15 +69,95 @@ class board{
 
 	// TODO: Document this
 	multiShot(row, col, boardNum){
-		var outCome; 
+		var outcome; 
 		for(var i=0; i<=8; i+=2)
 		{
-			outCome = this.attemptedShot(row, col+i);
-			if(outCome == 'T')
+			outcome = this.attemptedShot(row, col+i);
+			if(outcome == 'T')
 			{
-				console.log("Hit a trap");
+				if(boardNum == 0)
+				{
+					let trapCenter = p1Board.boardState(shotRow, shotCol+i).getPos()
+					for(let k=0;k<trapSize*2+1;k++) {
+						for(let j=0;j<trapSize*2+1;j++) {
+							p1Board.clear(trapCenter[0]-trapSize+k,(trapCenter[1]-trapSize+j)+i)
+							console.log("clearing traps nine times")
+							outcome = p2Board.attemptedShot(trapCenter[0]-trapSize+k,(trapCenter[1]-trapSize+j)+i)
+							if(outcome == 'H'){
+								$('.gridRight .cell[ row = ' + (trapCenter[0]-trapSize+k) + '][ col = ' + ((trapCenter[1]-trapSize+j)+i) + ']').css("background-color", "rgb(255, 0, 0)");
+								$('.gridRight .cell[ row = ' + (trapCenter[0]-trapSize+k) + '][ col = ' + ((trapCenter[1]-trapSize+j)+i) + ']').text("\nH");
+								//hasShot = true;
+								if(p2Board.board[trapCenter[0]-trapSize+k][(trapCenter[1]-trapSize+j)+i] instanceof ship && p2Board.board[trapCenter[0]-trapSize+k][(trapCenter[1]-trapSize+j)+i].isSunk()){
+									$("#mode").text("Your opponents trap sunk your 1x" + p2Board.board[trapCenter[0]-trapSize+k][(trapCenter[1]-trapSize+j)+i].getSize() + " battleship!");
+								}
+								$('#endTurn').prop('disabled', false);
+								$('#torpedo').prop('disabled', true);
+								$('#multiShot').prop('disabled', true);
+								if(p2Board.allSunk()){
+									console.log("p1 wins!");
+									//P1 wins!
+									endGame("Player 1");
+								}
+							} 
+							else if (outcome == 'T') {
+								// assign me a different job i aint doing this shit
+							}
+							else if (outcome == 'M'){
+								$('.gridRight .cell[ row = ' + (trapCenter[0]-trapSize+k) + '][ col = ' + ((trapCenter[1]-trapSize+j)+i) + ']').css("background-color", "rgb(0, 0, 255)");
+								$('.gridRight .cell[ row = ' + (trapCenter[0]-trapSize+k) + '][ col = ' + ((trapCenter[1]-trapSize+j)+i) + ']').text("\nM");
+								//hasShot = true;
+								$('#endTurn').prop('disabled', false);
+								$('#torpedo').prop('disabled', true);
+								$('#multiShot').prop('disabled', true);
+							}
+						}
+					}
+					$("#mode").text("You've fallen into their trap!")
+					outcome = p1Board.attemptedShot(shotRow, shotCol+i)
+				}
+				else if(boardNum == 1)
+				{
+					let trapCenter = p2Board.boardState(shotRow, shotCol+i).getPos()
+					for(let k=0;k<trapSize*2+1;k++) {
+						for(let j=0;j<trapSize*2+1;j++) {
+							p2Board.clear(trapCenter[0]-trapSize+k,(trapCenter[1]-trapSize+j)+i)
+							console.log("clearing traps nine times")
+							outcome = p1Board.attemptedShot(trapCenter[0]-trapSize+k,(trapCenter[1]-trapSize+j)+i)
+							if(outcome == 'H'){
+								$('.gridLeft .cell[ row = ' + (trapCenter[0]-trapSize+k) + '][ col = ' + ((trapCenter[1]-trapSize+j)+i) + ']').css("background-color", "rgb(255, 0, 0)");
+								$('.gridLeft .cell[ row = ' + (trapCenter[0]-trapSize+k) + '][ col = ' + ((trapCenter[1]-trapSize+j)+i) + ']').text("\nH");
+								//hasShot = true;
+								
+								if(p1Board.board[trapCenter[0]-trapSize+k][(trapCenter[1]-trapSize+j)+i] instanceof ship && p1Board.board[trapCenter[0]-trapSize+k][(trapCenter[1]-trapSize+j)+i].isSunk()){
+									$("#mode").text("Your opponents trap sunk your 1x" + p1Board.board[trapCenter[0]-trapSize+k][(trapCenter[1]-trapSize+j)+i].getSize() + " battleship!");
+								}
+								$('#endTurn').prop('disabled', false);
+								$('#torpedo').prop('disabled', true);
+								$('#multiShot').prop('disabled', true);
+								if(p1Board.allSunk()){
+									console.log("p2 wins!");
+									//P1 wins!
+									endGame("Player 2");
+								}
+							} 
+							else if (outcome == 'T') {
+								// assign me a different job i aint doing this shit
+							}
+							else if (outcome == 'M'){
+								$('.gridLeft .cell[ row = ' + (trapCenter[0]-trapSize+k) + '][ col = ' + ((trapCenter[1]-trapSize+j)+i) + ']').css("background-color", "rgb(0, 0, 255)");
+								$('.gridLeft .cell[ row = ' + (trapCenter[0]-trapSize+k) + '][ col = ' + ((trapCenter[1]-trapSize+j)+i) + ']').text("\nM");
+								//hasShot = true;
+								$('#endTurn').prop('disabled', false);
+								$('#torpedo').prop('disabled', true);
+								$('#multiShot').prop('disabled', true);
+							}
+						}
+					}
+					$("#mode").text("You've fallen into their trap!")
+					outcome = p2Board.attemptedShot(shotRow, shotCol+i)
+				}
 			}
-			if(outCome == 'H')
+			if(outcome == 'H')
 			{
 				if(currentTurn == 1)
 				{
@@ -108,7 +188,7 @@ class board{
 				}
 				
 			} 
-			else if (outCome == 'M')
+			else if (outcome == 'M')
 			{
 				if(currentTurn == 1)
 				{
