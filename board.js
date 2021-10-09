@@ -207,13 +207,14 @@ class board{
 	}
 
 	/**
-	*The attemptTorpedoShot function is provided a location to fire on, as well as what board is being
-	*fired on. The function starts from the bottom of the board at the selected column and then shoots
-	*each row upwards until it finds a ship or until it reaches the top of the board.
-	*@param rowClicked An integer representing the row that was clicked on the board
-	*@param col        An integer representing the column that was clicked on the board
-	*@param boardNum An integer representing what board is being fired on.
-	*@return None
+	* The attemptTorpedoShot function is provided a location to fire on, as well as what board is being
+	* fired on. The function starts from the bottom of the board at the selected column and then shoots
+	* each row upwards until it finds a ship or until it reaches the top of the board.
+	*
+	* @param rowClicked An integer representing the row that was clicked on the board
+	* @param col        An integer representing the column that was clicked on the board
+	* @param boardNum   An integer representing what board is being fired on.
+	* @return None
 	*/
 	attemptTorpedoShot(rowClicked, col, boardNum) {
 		console.log("CLICKED SQUARE:", rowClicked, col);
