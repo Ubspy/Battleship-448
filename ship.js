@@ -69,6 +69,8 @@ class ship{
 	* Registers the hit on the appropriate location on the ship - converts the appropriate
 	* location on teh hits array to a 1 
 	*
+	* @param distance the distance from the head of the ship to register the ship at
+	*
 	* @return None 
 	*/
 	registerHit(distance){//locate the hit on the ship 
