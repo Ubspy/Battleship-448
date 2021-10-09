@@ -151,7 +151,7 @@ class board{
 		$('#endTurn').prop('disabled', false);
 
 		for (let row = 8; row >= 0; row--) {
-			if (this.board[row][col] == 0) { // Found an empty space... keep on going
+			if (this.board[row][col] == 0 || this.board[row][col] instanceof trap) { // Found an empty space (or trap)... keep on going
 				$(`${gridID} .cell[ row = ` + row + '][ col = ' + col + ']').css("background-color", "rgb(0, 0, 255)");
 				$(`${gridID} .cell[ row = ` + row + '][ col = ' + col + ']').text("\nM");
 				this.board[row][col] = 1;
@@ -186,9 +186,6 @@ class board{
 
 				console.log("found a ship!", row, col);
 				break;
-			} else if (this.board[row][col] instanceof trap) { // Hit a trap square
-				console.log("HIT A TRAP", row, col);
-				//TODO: handle hitting a trap square. :)
 			}
 		}
 
