@@ -524,7 +524,6 @@ function startGame(shipCount){
 					$('#multiShot').prop('disabled', true);
 				}
 			}
-			hasShot = true;
 		}
 		if(currentTurn == 1 && hasShot && LnumShips-1 == shipCount){
 			$('#endTurn').prop('disabled', false);
@@ -749,7 +748,6 @@ function startGame(shipCount){
 						$('#multiShot').prop('disabled', true);
 					}
 				}
-				hasShot = true;
 			}
 		if(currentTurn == 2 && hasShot && RnumShips-1 == shipCount){
 			$('#endTurn').prop('disabled', false);
