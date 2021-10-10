@@ -54,8 +54,14 @@ function switchTurn(){
 	}
 }
 
-// Yes, I could update the other spots where this code is to use this function, but this code is the most super mario in real life
-// I've ever seen so I'm not even going to bother trying
+/**
+ * Yes, I could update the other spots where this code is to use this function, but this code is the most super mario in real life
+ * I've ever seen so I'm not even going to bother trying
+ * 
+ * @param outcome Char The result of the shot that was just taken
+ * @param shotRow Int The row that was just fired on
+ * @param shotCol Int The column that was just fired on
+**/
 function updateBoardColors(outcome, shotRow, shotCol) {
     if(outcome == 'H'){
         $('.gridLeft .cell[ row = ' + shotRow + '][ col = ' + shotCol + ']').css("background-color", "rgb(255, 0, 0)");

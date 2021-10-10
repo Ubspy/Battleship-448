@@ -37,11 +37,18 @@ class AI {
         this.extraHits = [];
     }
 
-    isActive()
-    {
+    /**
+     *
+     * @return Boolean if the AI is set to be on, as in there is no human player for this instance of the game
+    **/
+    isActive() {
         return this.mode != 0;
     }
 
+    /**
+     * @param boardObj Board the board object we're firing on
+     * @return Char What the result of the fire is, 'H' for hit and 'M' for miss
+    **/
     fire(boardObj) {
         if(this.mode == 1) {
             return this.#easyFire(boardObj);
@@ -212,7 +219,7 @@ class AI {
      * 
      * Hits a ship every shot. Cheats.
      * @param boardObj The board to fire at
-     * @returns What the shot resulted in ('H', since this mode always lands a hit).
+     * @returns Char What the shot resulted in ('H', since this mode always lands a hit).
      */
     #hardFire(boardObj) {
         // Find the first ship square that hasn't been shot at, and shoot at it
@@ -245,7 +252,7 @@ class AI {
     /**
      * This will fire randomly at the board given based off of the first position it found a ship at
      * @param boardObj board The board object containing the board we're firing at
-     * @returns What the shot resulted in. 'H' if hit, 'M' if miss.
+     * @returns Char What the shot resulted in. 'H' if hit, 'M' if miss.
     **/
     #fireRandomlyAdjacent(boardObj) {
         // Here we need to still be firing randomly, so we need to pick a direction to fire in
@@ -337,6 +344,9 @@ class AI {
         }
     }
 
+    /**
+     * @return Array An array in the format [row, col] of the last position the AI fired on
+    **/
     getLastFire() {
         return this.lastFiredOn;
     }
