@@ -302,6 +302,10 @@ function startGame(shipCount){
 	
 	$('#startTurn').prop('disabled', true);
 	$('#endTurn').prop('disabled', true);
+	if(ai.isActive()) {
+		$('#torpedo').prop('disabled', true);
+		$('#multiShot').prop('disabled', true);
+	}
 	
 	$(".gridLeft .cell").click(function(){
 		if(currentTurn == 1 && LnumShips <= shipCount){
@@ -758,6 +762,10 @@ function startGame(shipCount){
 		switchTurn();
 		$('#startTurn').prop('disabled', true);
 		$('#endTurn').prop('disabled', true);
+		if(ai.isActive()) {
+			$('#torpedo').prop('disabled', true);
+			$('#multiShot').prop('disabled', true);
+		}
 		
 		if (RshipsPlaced && LshipsPlaced) {
 			$("#mode").text("Shoot"); // change game mode to shoot
