@@ -446,17 +446,17 @@ function startGame(shipCount){
 			shotRow = parseInt($(this).attr("row"));
 			shotCol = parseInt($(this).attr("col"));
 			if(currentPowerUp)
+			{
+				switch (currentPowerUp)
 				{
-					switch (currentPowerUp)
-					{
-						case 1:
-							p1Board.attemptTorpedoShot(shotRow, shotCol, 1);
-							break;
-						case 2:
-							p1Board.multiShot(shotRow, shotCol, 0);
+					case 1:
+						p1Board.attemptTorpedoShot(shotRow, shotCol, 1);
+						break;
+					case 2:
+						p1Board.multiShot(shotRow, shotCol, 0);
 
-					}
 				}
+			}
 			else
 			{
 				outcome = p1Board.attemptedShot(shotRow, shotCol);

@@ -67,7 +67,13 @@ class board{
 		}
 	}
 
-	// TODO: Document this
+	/**
+	 * Calls the attemptedShot() 5 times in the same row, alternating columns
+	 * @param {*} row The index of the row of the multiShot
+	 * @param {*} col The index of the column of the left most shot on the multiShot
+	 * @param {*} boardNum Indicates the board that is being fired on
+	 * @returns None
+	 */
 	multiShot(row, col, boardNum){
 		var outcome; 
 		for(var i=0; i<=8; i+=2)
