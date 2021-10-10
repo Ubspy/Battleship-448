@@ -35,7 +35,7 @@ function switchTurn(){
         $("#turn").text("Current Turn: Player 1");
     } else if(ai.isActive() && !RshipsPlaced) {
         // If this is the case, AI needs to place ships and then we set RshipsPlaced to true
-        ai.placeShips(p2Board);
+        ai.placeShips(p2Board, shipCount);
         RshipsPlaced = true;
 		traps[1] = false
 		traps[2] = false
