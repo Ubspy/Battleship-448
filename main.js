@@ -37,6 +37,8 @@ function switchTurn(){
         // If this is the case, AI needs to place ships and then we set RshipsPlaced to true
         ai.placeShips(p2Board);
         RshipsPlaced = true;
+		traps[1] = false
+		traps[2] = false
 
         hasShot = false;
         currentTurn = 1;
@@ -401,7 +403,7 @@ function startGame(shipCount){
 				}
 			} 
 		} 
-		else if (currentTurn == 1 && placedTraps[1] < trapCount) {
+		else if (currentTurn == 1 && placedTraps[1] < trapCount && traps[1]) {
 			let tRow = $(this).attr("row");
 			let tCol = $(this).attr("col");
 			if((parseInt(tRow)-trapSize>=0)&&(parseInt(tCol)-trapSize>=0)&&(parseInt(tRow)+trapSize<9)&&(parseInt(tCol)+trapSize<10)) {
@@ -454,7 +456,6 @@ function startGame(shipCount){
 			{
 				outcome = p1Board.attemptedShot(shotRow, shotCol);
 				if(outcome == 'T') {
-					//fuck
 					let trapCenter = p1Board.boardState(shotRow, shotCol).getPos()
 					for(let i=0;i<trapSize*2+1;i++) {
 						for(let j=0;j<trapSize*2+1;j++) {
@@ -478,9 +479,6 @@ function startGame(shipCount){
 									endGame("Player 1");
 								}
 							} 
-							else if (outcome == 'T') {
-								// assign me a different job i aint doing this shit
-							}
 							else if (outcome == 'M'){
 								$('.gridRight .cell[ row = ' + (trapCenter[0]-trapSize+i) + '][ col = ' + (trapCenter[1]-trapSize+j) + ']').css("background-color", "rgb(0, 0, 255)");
 								$('.gridRight .cell[ row = ' + (trapCenter[0]-trapSize+i) + '][ col = ' + (trapCenter[1]-trapSize+j) + ']').text("\nM");
@@ -632,7 +630,7 @@ function startGame(shipCount){
 				}
 			}
 		} 
-		else if (currentTurn == 2 && placedTraps[2] < trapCount) {
+		else if (currentTurn == 2 && placedTraps[2] < trapCount && traps[2]) {
 			let tRow = $(this).attr("row");
 			let tCol = $(this).attr("col");
 			if((parseInt(tRow)-trapSize>=0)&&(parseInt(tCol)-trapSize>=0)&&(parseInt(tRow)+trapSize<9)&&(parseInt(tCol)+trapSize<10)) {
@@ -678,14 +676,12 @@ function startGame(shipCount){
 							break;
 						case 2:
 							p2Board.multiShot(shotRow, shotCol, 1);
-
 					}
 				}
 				else
 				{
 					outcome = p2Board.attemptedShot(shotRow, shotCol);
 					if(outcome == 'T') {
-						//fuck^2
 						let trapCenter = p2Board.boardState(shotRow, shotCol).getPos()
 						for(let i=0;i<trapSize*2+1;i++) {
 							for(let j=0;j<trapSize*2+1;j++) {
