@@ -14,6 +14,7 @@ let currentPowerUp = 0;
 let traps = [false, true, true]
 let trapCount = 1
 let trapSize = 1
+let turnOne = true;
 
 let ai;
 
@@ -51,6 +52,7 @@ function switchTurn(){
 		hasShot = false;
 		currentTurn = 1;
 		$("#turn").text("Current Turn: Player 1");
+		turnOne = false
 	}
 }
 
@@ -414,7 +416,7 @@ function startGame(shipCount){
 				}
 			} 
 		} 
-		else if (currentTurn == 1 && placedTraps[1] < trapCount && traps[1]) {
+		else if (currentTurn == 1 && placedTraps[1] < trapCount && traps[1] && !turnOne) {
 			let tRow = $(this).attr("row");
 			let tCol = $(this).attr("col");
 			if((parseInt(tRow)-trapSize>=0)&&(parseInt(tCol)-trapSize>=0)&&(parseInt(tRow)+trapSize<9)&&(parseInt(tCol)+trapSize<10)) {
@@ -640,7 +642,7 @@ function startGame(shipCount){
 				}
 			}
 		} 
-		else if (currentTurn == 2 && placedTraps[2] < trapCount && traps[2]) {
+		else if (currentTurn == 2 && placedTraps[2] < trapCount && traps[2] && !turnOne) {
 			let tRow = $(this).attr("row");
 			let tCol = $(this).attr("col");
 			if((parseInt(tRow)-trapSize>=0)&&(parseInt(tCol)-trapSize>=0)&&(parseInt(tRow)+trapSize<9)&&(parseInt(tCol)+trapSize<10)) {
